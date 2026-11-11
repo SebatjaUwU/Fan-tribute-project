@@ -1,31 +1,16 @@
 User-agent: *
 Allow: /
+# Herramientas del staff, boletas personales y páginas de prueba
+Disallow: /eventos-hub/herramientas-qr/
+Disallow: /eventos-hub/eventos/escanear.html
+Disallow: /eventos-hub/eventos/escanear-medellin.html
+Disallow: /eventos-hub/eventos/boleta-halloween.html
+Disallow: /eventos-hub/eventos/boleta-medellin.html
+Disallow: /eventos-hub/eventos/confirmacion.html
+Disallow: /eventos-hub/eventos/confirmacion-medellin.html
+Disallow: /eventos-hub/eventos/confirmacion-halloween-2016.html
+Disallow: /eventos-hub/eventos/back-to-halloween-2016-prueba1.html
+Disallow: /fanguess/
+Disallow: /index-nuevo.html
 
-User-agent: GPTBot
-Allow: /
-
-User-agent: ChatGPT-User
-Allow: /
-
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
-
-User-agent: ClaudeBot
-Allow: /
-
-User-agent: anthropic-ai
-Allow: /
-
-User-agent: Google-Extended
-Allow: /
-
-User-agent: CCBot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-Sitemap: https://fantributeco.netlify.app/sitemap.xml
+Sitemap: https://fantributecol.netlify.app/sitemap.xml

@@ -1,16 +1,22 @@
 # Fan Tribute
 
-> Fan Tribute organiza fiestas tributo de música electrónica (EDM) en Bogotá, Colombia. Recreamos la nostalgia de los himnos de EDM de 2016 (Avicii, David Guetta, Martin Garrix, Skrillex, Calvin Harris y más) en fiestas y raves temáticos, con boletería por WhatsApp y Wompi.
+> Fan Tribute es una productora independiente de fiestas en Bogotá, Colombia. Organiza fiestas tributo a los himnos del EDM de los años 2010–2016 (Avicii, David Guetta, Martin Garrix, Skrillex, Calvin Harris y más) en Bogotá y Medellín. No está afiliada a ninguna marca de festival internacional. Eventos tributo +18, artistas no presentes. Boletería por WhatsApp y Wompi.
 
-## Eventos actuales
+## Próximos eventos
 
-- [BACK TO HALLOWEEN 2016](https://fantributeco.netlify.app/eventos-hub/eventos/back-to-halloween-2016.html): Fiesta temática de Halloween con los himnos del EDM y la música electrónica de 2016 (Avicii, David Guetta y más). 31 de octubre de 2026, Capital Live Concerts, Kr 13 #48-90, Chapinero, Bogotá D.C., Colombia. Rave +18 con concurso de disfraces. Boletas: Preventa 1 desde $32.000, Hall Stage $70.000, Trío VIP $250.000, Backstage $400.000.
-- [Merch — Back to Halloween 2016](https://fantributeco.netlify.app/eventos-hub/back-to-halloween-2016-merch.html): Camisetas y abanicos oficiales de la fiesta.
-- [PRE-EDC Bogotá](https://fantributeco.netlify.app/edc-preparty/): Fiesta previa al EDC Colombia, con DJs nacionales tocando los himnos del EDC. Sábado 3 de octubre de 2026, Bogotá, Colombia. Entrada única $40.000, incluye 1 bebida.
-- [END OF SUMMER — Fan Tribute](https://fantributeco.netlify.app/eventos-hub/eventos/summer-2016.html): Fiesta homenaje a los clásicos del EDM de 2016, en Teatro Republik, Bogotá.
+- [BACK TO CLASSIC 2000](https://fantributecol.netlify.app/eventos-hub/eventos/back-to-classic-2000.html): crossover de EDM y reggaetón de los 2000. Sábado 28 de noviembre de 2026, 8 PM a 5 AM, Algarete, Zona T, Bogotá. Cover $35.000 con $15.000 de consumo. Venta por WhatsApp.
+- [END OF SUMMER 2016 — Medellín](https://fantributecol.netlify.app/eventos-hub/eventos/medellin-2016.html): tributo a los himnos del EDM de 2016. Sábado 12 de diciembre de 2026, Xero Club, Cl. 25 #43G-29, Medellín. Preventa 2 $40.000, General $45.000, VIP $85.000, Backstage $95.000 (todas incluyen consumo).
+- [LAST SUMMER 2016](https://fantributecol.netlify.app/eventos-hub/eventos/last-summer-2016.html): gran fiesta de cierre del año en Bogotá, segunda mitad de diciembre de 2026 (fecha y lugar por confirmar). Preventa Tributies $30.000 con $15.000 de consumo y regalo especial.
+
+## Eventos pasados
+
+- [BACK TO HALLOWEEN 2016](https://fantributecol.netlify.app/eventos-hub/eventos/back-to-halloween-2016.html): 31 de octubre de 2026, Capital Live Concerts, Bogotá.
+- [PRE-EDC Bogotá](https://fantributecol.netlify.app/edc-preparty/): 3 de octubre de 2026, Bogotá.
+- [END OF SUMMER](https://fantributecol.netlify.app/eventos-hub/eventos/summer-2016.html): 4 y 5 de septiembre de 2026, Bogotá.
 
 ## Contacto y redes
 
 - WhatsApp (boletas y consultas): https://wa.me/573161088178
 - Instagram: https://instagram.com/fantribute_col
 - TikTok: https://www.tiktok.com/@fantribute_col
+- Correo: fantributeco@gmail.com
