@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merch — END OF SUMMER</title>
+<meta name="description" content="Merch oficial END OF SUMMER: camisetas y abanicos de Avicii, Skrillex, Martin Garrix y Alan Walker.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night: #070E17;
+    --night-2: #0A1F17;
+    --sun: #FF6A2B;
+    --sun-soft: #FF8A50;
+    --horizon-blue: #1FA6E0;
+    --dusk-pink: #E8368F;
+    --dusk-purple: #9B5DE5;
+    --dusk-gold: #F9B233;
+    --blue: #2E6FF2;
+    --green: #22D37A;
+    --cream: #F5EFD9;
+    --cream-dim: #C9C2B2;
+    --line: rgba(245,239,217,0.14);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background: radial-gradient(120% 100% at 50% 0%, var(--night-2) 0%, var(--night) 55%);
+    color: var(--cream);
+    font-family:'Space Grotesk', sans-serif;
+    min-height:100vh;
+  }
+  .wrap{ max-width:1000px; margin:0 auto; padding:0 24px; }
+
+  header.top{ padding:48px 0 8px; text-align:center; }
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px; margin-bottom:22px;
+    font-family:'JetBrains Mono', monospace; font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--cream-dim); text-decoration:none;
+  }
+  .back-link:hover{ color:var(--cream); }
+  .back-link svg{ width:14px; height:14px; }
+  .brand{ font-family:'Unbounded', sans-serif; font-weight:900; font-size:clamp(28px,6vw,42px); }
+  .brand-tagline{ margin-top:8px; font-size:14px; color:var(--cream-dim); }
+
+  .section-head{ text-align:center; padding:56px 0 30px; }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--dusk-gold); margin-bottom:10px;
+  }
+  .section-head h2{ font-family:'Unbounded', sans-serif; font-weight:800; font-size:clamp(22px,4vw,30px); }
+
+  /* ---------- CAMISETAS (selector interactivo) ---------- */
+  .merch-card{
+    max-width:900px; margin:0 auto; display:grid; grid-template-columns: 1.1fr 1fr; gap:0;
+    border:1px solid var(--line); border-radius:22px; overflow:hidden; background: rgba(247,241,228,0.02);
+  }
+  @media (max-width:760px){ .merch-card{ grid-template-columns:1fr; } }
+
+  .merch-photo-wrap{ position:relative; display:flex; gap:2px; width:100%; min-height:320px; background: var(--night-2); overflow:hidden; }
+  .merch-photo-slot{ position:relative; flex:1; min-height:320px; }
+  .merch-photo{
+    width:100%; height:100%; object-fit:cover; display:block; position:absolute; inset:0;
+    opacity:0; transition: opacity 0.4s ease; pointer-events:none;
+  }
+  .merch-photo.is-active{ opacity:1; pointer-events:auto; }
+
+  .merch-photo-placeholder-fabric{
+    position:absolute; inset:0; z-index:5; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px; text-align:center; padding:24px; background: var(--night-2);
+    opacity:0; transition: opacity 0.3s ease; pointer-events:none;
+  }
+  .merch-photo-placeholder-fabric.is-active{ opacity:1; pointer-events:auto; }
+  .merch-photo-placeholder-fabric svg{ width:30px; height:30px; color: var(--cream-dim); opacity:0.6; }
+  .merch-photo-placeholder-fabric span{
+    font-family:'JetBrains Mono', monospace; font-size:11.5px; letter-spacing:0.06em; color: var(--cream-dim); text-transform:uppercase;
+  }
+
+  .merch-info{ padding:32px 34px; display:flex; flex-direction:column; }
+  .merch-title{ font-family:'Unbounded', sans-serif; font-weight:800; font-size:22px; color: var(--cream); margin-bottom:10px; }
+  .merch-desc{ font-size:14px; line-height:1.65; color: var(--cream-dim); margin-bottom:18px; }
+  .merch-desc strong{ color: var(--cream); font-weight:600; }
+
+  .merch-group-label{
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color: var(--cream-dim); margin-bottom:8px;
+  }
+
+  .merch-designs{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .merch-design-chip{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.04em; padding:7px 13px;
+    border-radius:100px; border:1px solid var(--line); color: var(--cream-dim); background:transparent;
+    cursor:pointer; transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+  }
+  .merch-design-chip[data-design="avicii"]{ border-color: rgba(255,106,43,0.4); color: rgba(255,138,80,0.55); }
+  .merch-design-chip[data-design="garrix"]{ border-color: rgba(31,166,224,0.4); color: rgba(31,166,224,0.55); }
+  .merch-design-chip[data-design="skrillex"]{ border-color: rgba(155,93,229,0.4); color: rgba(155,93,229,0.55); }
+  .merch-design-chip[data-design="guetta"]{ border-color: rgba(232,54,143,0.4); color: rgba(232,54,143,0.55); }
+  .merch-design-chip.is-active[data-design="avicii"]{ color: var(--sun-soft); background: rgba(255,106,43,0.12); }
+  .merch-design-chip.is-active[data-design="garrix"]{ color: var(--horizon-blue); background: rgba(31,166,224,0.12); }
+  .merch-design-chip.is-active[data-design="skrillex"]{ color: var(--dusk-purple); background: rgba(155,93,229,0.12); }
+  .merch-design-chip.is-active[data-design="guetta"]{ color: var(--dusk-pink); background: rgba(232,54,143,0.12); }
+
+  .merch-colors{ display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+  .color-swatch{
+    width:26px; height:26px; border-radius:50%; cursor:pointer; border:2px solid var(--line);
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+  .color-swatch[data-color="white"]{ background:#F7F1E4; }
+  .color-swatch[data-color="black"]{ background:#141414; }
+  .color-swatch.is-active{ border-color: var(--sun-soft); transform:scale(1.15); }
+  .color-swatch.is-unavailable{ display:none; }
+
+  .merch-price{ font-family:'Unbounded', sans-serif; font-weight:900; font-size:32px; color: var(--cream); margin:4px 0 22px; }
+  .merch-price sup{ font-size:13px; font-weight:600; color:var(--cream-dim); margin-right:2px; }
+
+  .merch-btn{
+    display:flex; align-items:center; justify-content:center; gap:9px; padding:15px 22px; border-radius:12px;
+    background: linear-gradient(90deg, #25D366, #1EBE57); color:#06210F; font-family:'Unbounded', sans-serif;
+    font-weight:700; font-size:12.5px; letter-spacing:0.04em; text-transform:uppercase; text-decoration:none;
+    margin-top:auto; transition: transform 0.25s ease, box-shadow 0.25s ease; box-shadow: 0 10px 26px rgba(37,211,102,0.22);
+  }
+  .merch-btn:hover{ transform:translateY(-2px); box-shadow:0 14px 32px rgba(37,211,102,0.32); }
+  .merch-btn svg{ width:16px; height:16px; }
+
+  /* ---------- DONACIONES ---------- */
+  .donate-card{
+    max-width:480px; margin:60px auto 0; padding:40px 34px; text-align:center;
+    border:1px solid var(--line); border-radius:22px; background: rgba(245,239,217,0.02);
+  }
+  .donate-heart{ color: var(--sun); margin-bottom:18px; }
+  .donate-heart svg{ width:44px; height:44px; filter: drop-shadow(0 6px 18px rgba(255,106,43,0.4)); }
+  .donate-card .merch-desc{ margin-bottom:24px; }
+  .merch-btn--donate{
+    background: linear-gradient(90deg, var(--sun), var(--sun-soft)); color:#2A0D00;
+    box-shadow: 0 10px 26px rgba(255,106,43,0.28); display:inline-flex;
+  }
+  .merch-btn--donate:hover{ box-shadow:0 14px 32px rgba(255,106,43,0.38); }
+
+  /* ---------- ABANICOS (producto nuevo) ---------- */
+  .fan-card{
+    max-width:900px; margin:60px auto 0; display:grid; grid-template-columns: 1.1fr 1fr; gap:0;
+    border:1px solid var(--line); border-radius:22px; overflow:hidden; background: rgba(245,239,217,0.02);
+  }
+  @media (max-width:760px){ .fan-card{ grid-template-columns:1fr; } }
+  .fan-photo{ width:100%; height:100%; min-height:320px; object-fit:cover; display:block; background:var(--night-2); }
+  .fan-info{ padding:32px 34px; display:flex; flex-direction:column; }
+  .fan-artists{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .fan-artist-chip{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:0.04em; padding:7px 13px;
+    border-radius:100px; border:1px solid var(--line); color:var(--cream-dim);
+  }
+
+  footer{ text-align:center; padding:60px 0 50px; font-size:12px; color:var(--cream-dim); }
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+    <header class="top">
+      <a class="back-link" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Volver al inicio
+      </a>
+      <div class="brand">Merch</div>
+      <div class="brand-tagline">END OF SUMMER — Fan Tribute · válido para ambas fechas</div>
+    </header>
+
+    <div class="section-head">
+      <div class="eyebrow">Camisetas</div>
+      <h2>Llévate un pedazo del verano</h2>
+    </div>
+
+    <div class="merch-card" id="merchCard">
+      <div class="merch-photo-wrap" id="merchPhotoWrap">
+        <div class="merch-photo-slot" data-side="front">
+          <img class="merch-photo is-active" data-combo="avicii_white_front" decoding="async" src="merch-img/avicii_white_front.webp">
+          <img class="merch-photo" data-combo="avicii_black_front" loading="lazy" decoding="async" src="merch-img/avicii_black_front.webp">
+          <img class="merch-photo" data-combo="garrix_white_front" loading="lazy" decoding="async" src="merch-img/garrix_white_front.webp">
+          <img class="merch-photo" data-combo="garrix_black_front" loading="lazy" decoding="async" src="merch-img/garrix_black_front.webp">
+          <img class="merch-photo" data-combo="skrillex_white_front" loading="lazy" decoding="async" src="merch-img/skrillex_white_front.webp">
+          <img class="merch-photo" data-combo="skrillex_black_front" loading="lazy" decoding="async" src="merch-img/skrillex_black_front.webp">
+          <img class="merch-photo" data-combo="guetta_black_front" loading="lazy" decoding="async" src="merch-img/guetta_black_front.webp">
+          <img class="merch-photo" data-combo="guetta_white_front" loading="lazy" decoding="async" src="merch-img/guetta_white_front.webp">
+        </div>
+        <div class="merch-photo-slot" data-side="back">
+          <img class="merch-photo is-active" data-combo="avicii_white_back" decoding="async" src="merch-img/avicii_white_back.webp">
+          <img class="merch-photo" data-combo="avicii_black_back" loading="lazy" decoding="async" src="merch-img/avicii_black_back.webp">
+          <img class="merch-photo" data-combo="garrix_white_back" loading="lazy" decoding="async" src="merch-img/garrix_white_back.webp">
+          <img class="merch-photo" data-combo="garrix_black_back" loading="lazy" decoding="async" src="merch-img/garrix_black_back.webp">
+          <img class="merch-photo" data-combo="skrillex_white_back" loading="lazy" decoding="async" src="merch-img/skrillex_white_back.webp">
+          <img class="merch-photo" data-combo="skrillex_black_back" loading="lazy" decoding="async" src="merch-img/skrillex_black_back.webp">
+          <img class="merch-photo" data-combo="guetta_black_back" loading="lazy" decoding="async" src="merch-img/guetta_black_back.webp">
+          <img class="merch-photo" data-combo="guetta_white_back" loading="lazy" decoding="async" src="merch-img/guetta_white_back.webp">
+        </div>
+
+        <div class="merch-photo-placeholder-fabric" id="fabricPlaceholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          <span>Foto de esta combinación — próximamente</span>
+        </div>
+      </div>
+      <div class="merch-info">
+        <div class="merch-title">Camiseta End of Summer</div>
+        <p class="merch-desc">Estampado a doble cara: al frente una frase icónica del artista, y atrás el line-up completo del EDM que marcó el 2016.</p>
+
+        <div class="merch-group-label">Diseño</div>
+        <div class="merch-designs">
+          <button class="merch-design-chip is-active" data-design="avicii" type="button">Avicii</button>
+          <button class="merch-design-chip" data-design="garrix" type="button">Martin Garrix</button>
+          <button class="merch-design-chip" data-design="skrillex" type="button">Skrillex</button>
+          <button class="merch-design-chip" data-design="guetta" type="button">David Guetta</button>
+        </div>
+
+        <div class="merch-group-label">Color</div>
+        <div class="merch-colors">
+          <button class="color-swatch is-active" data-color="white" type="button" aria-label="Blanco"></button>
+          <button class="color-swatch" data-color="black" type="button" aria-label="Negro"></button>
+        </div>
+
+        <div class="merch-price"><sup>$</sup>80.000</div>
+
+        <a class="merch-btn" href="https://wa.me/qr/DKCLUNNM63OBD1" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.94 8.94 0 0 0-7.74 13.4L3 21l3.72-1.28a8.9 8.9 0 0 0 5.32 1.75h.02c4.93 0 8.94-4 8.94-8.94a8.86 8.86 0 0 0-3.4-6.21ZM12.05 20a7.4 7.4 0 0 1-3.78-1.04l-.27-.16-2.8.97.94-2.74-.18-.28a7.44 7.44 0 1 1 13.83-3.86A7.45 7.45 0 0 1 12.05 20Z"/></svg>
+          Pedir por WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="eyebrow">Abanicos</div>
+      <h2>Para refrescarte en la pista</h2>
+    </div>
+
+    <div class="fan-card">
+      <img class="fan-photo" loading="lazy" decoding="async" src="merch-img/fan-photo.webp" alt="Set de abanicos END OF SUMMER — Avicii, Skrillex, Martin Garrix y Alan Walker">
+      <div class="fan-info">
+        <div class="merch-title">Set de Abanicos END OF SUMMER</div>
+        <p class="merch-desc">Abanicos plegables de tela, edición fan tribute. Disponibles con el arte de:</p>
+        <div class="fan-artists">
+          <span class="fan-artist-chip">Avicii</span>
+          <span class="fan-artist-chip">Skrillex</span>
+          <span class="fan-artist-chip">Martin Garrix</span>
+          <span class="fan-artist-chip">Alan Walker</span>
+        </div>
+        <div class="merch-price"><sup>$</sup>35.000</div>
+        <a class="merch-btn" href="https://wa.me/qr/DKCLUNNM63OBD1" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.32A8.86 8.86 0 0 0 12.05 4a8.94 8.94 0 0 0-7.74 13.4L3 21l3.72-1.28a8.9 8.9 0 0 0 5.32 1.75h.02c4.93 0 8.94-4 8.94-8.94a8.86 8.86 0 0 0-3.4-6.21ZM12.05 20a7.4 7.4 0 0 1-3.78-1.04l-.27-.16-2.8.97.94-2.74-.18-.28a7.44 7.44 0 1 1 13.83-3.86A7.45 7.45 0 0 1 12.05 20Z"/></svg>
+          Pedir por WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <div class="eyebrow">Donaciones</div>
+      <h2>Apoya el evento</h2>
+    </div>
+
+    <div class="donate-card">
+      <div class="donate-heart">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.2-4.7-10-9.1C.3 8.9 1.6 5 5.2 4.2c2.1-.5 4 .5 4.8 2 .8-1.5 2.7-2.5 4.8-2 3.6.8 4.9 4.7 3.2 7.7C19.2 16.3 12 21 12 21Z"/></svg>
+      </div>
+      <p class="merch-desc">Si quieres ayudarnos a que END OF SUMMER siga sonando, cualquier aporte es bienvenido.</p>
+      <a class="merch-btn merch-btn--donate" href="https://checkout.wompi.co/l/FPAQR2" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.2-4.7-10-9.1C.3 8.9 1.6 5 5.2 4.2c2.1-.5 4 .5 4.8 2 .8-1.5 2.7-2.5 4.8-2 3.6.8 4.9 4.7 3.2 7.7C19.2 16.3 12 21 12 21Z"/></svg>
+        Donar por Wompi
+      </a>
+    </div>
+
+    <footer>END OF SUMMER — Fan Tribute · Bogotá</footer>
+  </div>
+
+  <script>
+    const merchState = { design: 'avicii', color: 'white' };
+    const designColors = { avicii: ['white','black'], garrix: ['white','black'], skrillex: ['white','black'], guetta: ['white','black'] };
+
+    function renderMerch(){
+      const availableColors = designColors[merchState.design] || ['white','black'];
+      if(availableColors.indexOf(merchState.color) === -1){
+        merchState.color = availableColors[0];
+      }
+      const comboPrefix = merchState.design + '_' + merchState.color + '_';
+
+      document.querySelectorAll('.merch-design-chip').forEach(c=>{
+        c.classList.toggle('is-active', c.getAttribute('data-design') === merchState.design);
+      });
+      document.querySelectorAll('.color-swatch').forEach(c=>{
+        const color = c.getAttribute('data-color');
+        const isAvailable = availableColors.indexOf(color) !== -1;
+        c.classList.toggle('is-active', color === merchState.color);
+        c.classList.toggle('is-unavailable', !isAvailable);
+      });
+
+      const fabricPlaceholder = document.getElementById('fabricPlaceholder');
+      let hasPhotoMatch = false;
+      document.querySelectorAll('.merch-photo').forEach(img=>{
+        const isMatch = img.getAttribute('data-combo').indexOf(comboPrefix) === 0;
+        img.classList.toggle('is-active', isMatch);
+        if(isMatch) hasPhotoMatch = true;
+      });
+      fabricPlaceholder.classList.toggle('is-active', !hasPhotoMatch);
+    }
+
+    document.querySelectorAll('.merch-design-chip').forEach(chip=>{
+      chip.addEventListener('click', function(){
+        merchState.design = chip.getAttribute('data-design');
+        renderMerch();
+      });
+    });
+    document.querySelectorAll('.color-swatch').forEach(sw=>{
+      sw.addEventListener('click', function(){
+        merchState.color = sw.getAttribute('data-color');
+        renderMerch();
+      });
+    });
+
+    renderMerch();
+  </script>
+
+</body>
+</html>

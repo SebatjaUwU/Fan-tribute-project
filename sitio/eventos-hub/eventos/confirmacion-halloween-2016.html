@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>¡Dulce! Compra confirmada — BACK TO HALLOWEEN 2016</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat+Brush&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black: #050406;
+    --charcoal: #17151C;
+    --white: #EDEAE6;
+    --white-dim: #A79FB0;
+    --orange: #FF6B1A;
+    --orange-soft: #FFA361;
+    --purple: #6A2FD9;
+    --purple-glow: #9B5CFF;
+    --red-soft: #E0596B;
+    --line: rgba(237,234,230,0.14);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(255,107,26,0.16), transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(106,47,217,0.18), transparent 60%),
+      var(--black);
+    color: var(--white);
+    font-family:'Space Grotesk', sans-serif;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+    overflow-x:hidden;
+  }
+
+  .card{
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:460px;
+    background: linear-gradient(165deg, rgba(255,107,26,0.08), rgba(106,47,217,0.08));
+    border:1px solid rgba(255,107,26,0.3);
+    border-radius:22px;
+    padding:34px 28px 30px;
+    text-align:center;
+    box-shadow:0 0 40px rgba(255,107,26,0.08);
+  }
+  .brands{ margin-bottom:18px; }
+  .brands img{ display:block; margin:0 auto; }
+  .brand-fan{
+    height:36px; width:auto; margin-bottom:12px !important;
+    filter: drop-shadow(0 0 3px rgba(237,234,230,0.85)) drop-shadow(0 0 10px rgba(237,234,230,0.4));
+  }
+  .brand-event{
+    width:min(230px,70vw); height:auto;
+    filter: drop-shadow(0 0 20px rgba(255,107,26,0.4)) drop-shadow(0 0 40px rgba(106,47,217,0.3));
+  }
+
+  .eyebrow{
+    font-family:'Caveat Brush', cursive;
+    font-size:22px;
+    color: var(--orange-soft);
+    margin-bottom:6px;
+  }
+  .status-icon{
+    width:64px; height:64px;
+    margin:0 auto 16px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:34px;
+    background: linear-gradient(135deg, var(--orange), var(--purple));
+    box-shadow:0 0 28px rgba(255,107,26,0.35);
+    animation:pop 0.6s cubic-bezier(.2,1.4,.4,1) both;
+  }
+  @keyframes pop{ from{ transform:scale(0.4); opacity:0; } to{ transform:scale(1); opacity:1; } }
+
+  h1{
+    font-family:'Bebas Neue', sans-serif;
+    font-weight:400;
+    font-size:38px;
+    line-height:1.05;
+    letter-spacing:0.02em;
+    margin-bottom:10px;
+  }
+  h1 .accent{
+    background:linear-gradient(90deg, var(--orange), var(--red-soft), var(--purple-glow));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .subtitle{
+    font-size:15px;
+    color: var(--white-dim);
+    line-height:1.6;
+    margin-bottom:22px;
+  }
+  .subtitle strong{ color: var(--white); }
+
+  .steps{
+    list-style:none;
+    text-align:left;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background: rgba(237,234,230,0.03);
+    padding:6px 16px;
+    margin-bottom:22px;
+  }
+  .steps li{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:12px 0;
+    font-size:14px; line-height:1.55;
+    color: var(--white-dim);
+  }
+  .steps li + li{ border-top:1px dashed var(--line); }
+  .steps .num{
+    flex:none; width:24px; height:24px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono', monospace; font-size:12px; font-weight:700;
+    color:#1A0B00; background: var(--orange-soft);
+  }
+  .steps strong{ color: var(--white); }
+
+  .gift{
+    border:1px solid rgba(155,92,255,0.35);
+    border-radius:16px;
+    padding:16px 18px;
+    margin-bottom:22px;
+    background: rgba(106,47,217,0.1);
+    font-size:14px;
+    line-height:1.65;
+  }
+  .gift strong{ color: var(--orange-soft); }
+
+  .event-info{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    line-height:1.8;
+    color: var(--white-dim);
+    margin-bottom:22px;
+  }
+  .event-info strong{ color: var(--white); }
+
+  .btn-row{ display:flex; flex-direction:column; gap:10px; }
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    padding:14px 20px;
+    border-radius:100px;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:700;
+    font-size:12.5px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    text-decoration:none;
+  }
+  .btn-primary{ background: linear-gradient(90deg, var(--orange), var(--purple)); color:#fff; }
+  .btn-secondary{ background: rgba(237,234,230,0.06); color: var(--white); border:1px solid var(--line); }
+
+  .ref{
+    margin-top:20px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    color: var(--white-dim);
+    opacity:0.7;
+    word-break:break-all;
+    display:none;
+  }
+  .ref.show{ display:block; }
+  .note{ margin-top:14px; font-size:12px; line-height:1.6; color: var(--white-dim); opacity:0.8; }
+  .note strong{ color: var(--white); }
+
+  @media (max-width:400px){
+    .card{ padding:28px 18px 24px; }
+    h1{ font-size:32px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .status-icon{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="card">
+  <div class="brands">
+    <img class="brand-fan" src="../../edc-preparty/ASSETS/fan-tribute-logo-transparent.png" alt="Fan Tribute">
+    <img class="brand-event" src="../../edc-preparty/ASSETS/back_to_halloween_2016_logo.png" alt="Back to Halloween 2016">
+  </div>
+
+  <div class="status-icon" aria-hidden="true">🎃</div>
+  <p class="eyebrow">Dulce o truco…</p>
+  <h1>¡Te tocó dulce! <span class="accent">Tu compra está confirmada</span></h1>
+  <p class="subtitle">Mantente pendiente de tu <strong>correo electrónico</strong>: allí te llegará tu <strong>código QR</strong> para entrar a la fiesta más espeluznante de 2016.</p>
+
+  <ul class="steps">
+    <li><span class="num" aria-hidden="true">1</span><span><strong>Revisa tu correo.</strong> Mira la bandeja de entrada y también <strong>spam</strong> o <strong>promociones</strong>: a veces el QR se esconde como un fantasma.</span></li>
+    <li><span class="num" aria-hidden="true">2</span><span><strong>Guarda tu QR.</strong> Hazle captura o descárgalo; lo necesitas para entrar.</span></li>
+    <li><span class="num" aria-hidden="true">3</span><span><strong>Preséntalo en la entrada</strong> el día del evento, y ven disfrazado: hay <strong>concurso de disfraces</strong>.</span></li>
+  </ul>
+
+  <p class="gift">🎁 <strong>¡Dulce!</strong> Además de tu QR, <strong>puede que te lleves un regalo sorpresa</strong> la noche del evento. Ven con tu mejor disfraz y mantente atento… 🍬🎃</p>
+
+  <p class="event-info">
+    <strong>Sábado 31 de octubre</strong><br>
+    Capital Live Concerts · KR 13 #48-90, Bogotá<br>
+    Evento tributo +18 · artista no presente
+  </p>
+
+  <div class="btn-row">
+    <a class="btn btn-primary" href="back-to-halloween-2016.html">Ver detalles del evento</a>
+    <a class="btn btn-secondary" href="https://instagram.com/fantribute_col" target="_blank" rel="noopener">Síguenos en Instagram</a>
+  </div>
+
+  <p class="ref" id="payRef"></p>
+  <p class="note">¿No te llegó el QR después de unas horas? Escríbenos por Instagram <strong>@fantribute_col</strong>.</p>
+</main>
+
+<script>
+  (function () {
+    // Wompi redirige con ?id=<transaccion>; se muestra como referencia por si
+    // la persona necesita escribirnos.
+    var txId = new URLSearchParams(window.location.search).get('id');
+    if (txId) {
+      var ref = document.getElementById('payRef');
+      ref.textContent = 'Referencia de tu pago: ' + txId;
+      ref.classList.add('show');
+    }
+  })();
+</script>
+
+</body>
+</html>

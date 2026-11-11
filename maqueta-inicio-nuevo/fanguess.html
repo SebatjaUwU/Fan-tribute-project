@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FanGuess · Fan Tribute (maqueta)</title>
+<link rel="icon" href="img/fan-tribute-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --deep:#0B0618; --deep-2:#140B2A; --card:rgba(253,244,232,.05); --line:rgba(253,244,232,.14);
+    --cream:#FDF4E8; --dim:#C3B8D9; --orange:#FF6A2B; --orange-soft:#FF9A52; --gold:#FFC24B;
+    --pink:#FF4FA3; --violet:#8B3DFF; --ok:#3DDC97; --bad:#FF5A6E;
+    --l1:#3DDC97; --l2:#3FB8FF; --l3:#A45BFF; --l4:#FF6A2B;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  body{ background:radial-gradient(90% 60% at 50% -10%,#3B1466 0%,var(--deep) 60%) var(--deep); color:var(--cream); font-family:'Bebas Neue',sans-serif; min-height:100vh; overflow-x:hidden; }
+  a{ color:inherit; }
+  button,input{ font:inherit; color:inherit; }
+  html{ font-size:112.5%; }
+  body{ font-weight:400; letter-spacing:.035em; font-synthesis:none; }
+  *{ font-weight:400 !important; }
+  :focus-visible{ outline:2px solid var(--gold); outline-offset:3px; }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 20px; }
+  .mono{ font-family:'Bebas Neue',sans-serif; font-size:14px; letter-spacing:.14em; text-transform:uppercase; }
+  .mockbar{ background:var(--gold); color:#1a0f00; text-align:center; padding:7px 16px; font-weight:700; font-size:15.5px; }
+
+  .nav{ position:sticky; top:0; z-index:50; background:rgba(11,6,24,.72); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  .nav .wrap{ display:flex; align-items:center; justify-content:space-between; gap:12px; height:62px; }
+  .logo{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+  .logo img{ height:24px; width:auto; }
+  .logo b{ font-family:'Bebas Neue',sans-serif; font-weight:800; font-size:17px; }
+  .logo b span{ color:var(--pink); }
+  .links{ display:none; gap:26px; font-size:17px; font-weight:600; }
+  .links a{ text-decoration:none; opacity:.8; }
+  .links a:hover{ opacity:1; color:var(--orange-soft); }
+  .links a[aria-current]{ opacity:1; color:var(--pink); }
+  @media (min-width:860px){ .links{ display:flex; } }
+  .me{ display:flex; align-items:center; gap:10px; }
+  .streak{ display:inline-flex; align-items:center; gap:6px; min-height:40px; padding:0 14px; border-radius:100px; background:rgba(255,106,43,.14); border:1px solid rgba(255,106,43,.4); font-weight:700; font-size:17px; }
+  .avatar{ width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:linear-gradient(135deg,var(--pink),var(--violet)); font-weight:800; font-size:17px; border:0; cursor:pointer; }
+
+  section{ padding:44px 0; }
+  h1,h2{ font-family:'Bebas Neue',sans-serif; font-weight:800; line-height:1.08; }
+  h1{ font-size:clamp(50px,10vw,92px); }
+  h1 span, h2 span{ color:var(--pink); }
+  h2{ font-size:clamp(32px,4.4vw,46px); margin-bottom:6px; }
+  .lead{ color:var(--dim); font-size:clamp(15px,2vw,17px); line-height:1.6; max-width:560px; margin-top:12px; }
+  .sub{ color:var(--dim); font-size:17px; margin-bottom:20px; }
+
+  /* resumen del jugador */
+  .hero{ padding-top:40px; display:grid; gap:24px; }
+  @media (min-width:900px){ .hero{ grid-template-columns:1.2fr .8fr; align-items:end; } }
+  .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .kpi{ background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; }
+  .kpi b{ display:block; font-family:'Bebas Neue',sans-serif; font-size:clamp(20px,3vw,28px); font-variant-numeric:tabular-nums; }
+  .kpi span{ color:var(--dim); font-size:15.5px; }
+  .week{ display:flex; gap:6px; margin-top:12px; }
+  .week i{ flex:1; height:30px; border-radius:8px; background:rgba(253,244,232,.08); display:grid; place-items:center; font-style:normal; font-size:14px; color:var(--dim); font-family:'Bebas Neue',sans-serif; }
+  .week i.on{ background:linear-gradient(180deg,var(--orange-soft),var(--orange)); color:#2a0d00; font-weight:700; }
+  .week i.today{ outline:2px dashed var(--orange-soft); outline-offset:-2px; }
+
+  /* niveles */
+  .levels{ display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(min(100%,160px),1fr)); }
+  @media (max-width:560px){ .lvl{ min-height:0; padding:14px; } .lvl p{ font-size:15.5px; } .lvl h3{ font-size:19px; } }
+  .lvl{ position:relative; text-align:left; cursor:pointer; background:var(--card); border:1px solid var(--line); border-radius:20px; padding:18px; display:flex; flex-direction:column; gap:10px; transition:transform .2s ease, border-color .2s ease; min-height:150px; }
+  .lvl:hover{ transform:translateY(-3px); border-color:var(--c); }
+  .lvl[aria-pressed="true"]{ border-color:var(--c); box-shadow:0 0 0 1px var(--c), 0 18px 40px -22px var(--c); }
+  .lvl .top{ display:flex; justify-content:space-between; align-items:center; }
+  .bars{ display:flex; gap:3px; align-items:flex-end; height:22px; }
+  .bars i{ width:6px; border-radius:2px; background:rgba(253,244,232,.18); }
+  .bars i:nth-child(1){ height:35%; } .bars i:nth-child(2){ height:55%; } .bars i:nth-child(3){ height:78%; } .bars i:nth-child(4){ height:100%; }
+  .lvl .bars i.f{ background:var(--c); }
+  .lvl h3{ font-family:'Bebas Neue',sans-serif; font-size:26px; }
+  .lvl p{ color:var(--dim); font-size:16.5px; line-height:1.5; }
+  .lvl .meta{ margin-top:auto; display:flex; justify-content:space-between; font-size:15.5px; color:var(--dim); }
+  .lvl .meta b{ color:var(--c); }
+  .done{ font-size:14px; padding:3px 8px; border-radius:100px; background:rgba(61,220,151,.15); color:var(--ok); font-family:'Bebas Neue',sans-serif; letter-spacing:.06em; }
+
+  /* juego */
+  .game{ display:grid; gap:18px; }
+  @media (min-width:900px){ .game{ grid-template-columns:1.25fr .75fr; align-items:start; } }
+  .panel{ background:rgba(20,11,42,.8); border:1px solid var(--line); border-radius:24px; padding:clamp(18px,3vw,28px); }
+  .round{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+  .pill{ font-size:15px; padding:5px 10px; border-radius:100px; border:1px solid var(--line); color:var(--dim); }
+  .pill.lv{ border-color:var(--c, var(--l3)); color:var(--cream); }
+  .lives{ display:flex; gap:6px; align-items:center; }
+  .lives i{ width:14px; height:14px; border-radius:50%; background:var(--pink); box-shadow:0 0 12px rgba(255,79,163,.6); transition:background .3s, box-shadow .3s; }
+  .lives i.lost{ background:rgba(253,244,232,.15); box-shadow:none; }
+
+  .player{ display:flex; align-items:center; gap:16px; }
+  .play{ flex:none; width:64px; height:64px; border-radius:50%; border:0; cursor:pointer; background:var(--cream); color:#1a0b2e; display:grid; place-items:center; box-shadow:0 10px 30px rgba(255,79,163,.35); transition:transform .15s; }
+  .play:active{ transform:scale(.94); }
+  .play svg{ width:26px; height:26px; }
+  .track{ flex:1; min-width:0; }
+  .timeline{ position:relative; height:14px; border-radius:100px; background:rgba(253,244,232,.08); overflow:hidden; }
+  .unlocked{ position:absolute; inset:0 auto 0 0; background:rgba(255,79,163,.25); border-radius:100px; transition:width .4s ease; }
+  .progress{ position:absolute; inset:0 auto 0 0; width:0; background:linear-gradient(90deg,var(--pink),var(--violet)); border-radius:100px; }
+  .ticks{ display:flex; justify-content:space-between; margin-top:8px; font-size:14.5px; color:var(--dim); font-family:'Bebas Neue',sans-serif; }
+  .ticks span.on{ color:var(--cream); }
+  /* onda de audio (barras finas simétricas con degradado verde → lila → violeta) */
+  .sw{ display:flex; align-items:center; gap:3px; width:100%; }
+  .sw::before,.sw::after{ content:''; flex:1 0 6%; height:3px; border-radius:2px; }
+  .sw::before{ background:#1F9E68; } .sw::after{ background:#5B34A0; }
+  .sw i{ flex:1 1 0; max-width:5px; min-width:2px; height:calc(var(--h) * 1%); border-radius:2px; background:linear-gradient(180deg, var(--hi), var(--col)); transform-origin:center; animation:swv var(--d) ease-in-out var(--dl) infinite alternate; }
+  @keyframes swv{ from{ transform:scaleY(.3); } to{ transform:scaleY(1); } }
+  .sw.idle i{ animation-play-state:paused; opacity:.35; filter:saturate(.4); transform:scaleY(.6); transition:opacity .3s, filter .3s; }
+  .sw.idle::before,.sw.idle::after{ opacity:.4; }
+  @media (prefers-reduced-motion:reduce){ .sw i{ animation:none; } }
+
+  .guesses{ display:grid; gap:8px; margin:20px 0; }
+  .g{ min-height:48px; border-radius:12px; border:1px dashed var(--line); display:flex; align-items:center; gap:10px; padding:0 14px; font-size:17.5px; color:var(--dim); }
+  .g.bad{ border-style:solid; border-color:rgba(255,90,110,.5); background:rgba(255,90,110,.08); color:var(--cream); }
+  .g.skip{ border-style:solid; color:var(--dim); }
+  .g.ok{ border-style:solid; border-color:rgba(61,220,151,.6); background:rgba(61,220,151,.1); color:var(--cream); }
+  .g svg{ width:18px; height:18px; flex:none; }
+
+  .answer{ position:relative; display:flex; gap:10px; }
+  .answer label{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+  .answer input{ flex:1; min-width:0; min-height:52px; border-radius:14px; border:1px solid var(--line); background:rgba(11,6,24,.6); padding:0 16px; font-size:19px; }
+  .answer input:focus{ border-color:var(--pink); outline:none; }
+  .sugg{ position:absolute; left:0; right:0; bottom:calc(100% + 6px); background:#1d1236; border:1px solid var(--line); border-radius:14px; overflow:hidden; display:none; z-index:5; }
+  .sugg.open{ display:block; }
+  .sugg button{ display:block; width:100%; text-align:left; background:none; border:0; padding:12px 16px; min-height:44px; cursor:pointer; font-size:17.5px; }
+  .sugg button:hover, .sugg button:focus{ background:rgba(253,244,232,.08); outline:none; }
+  .sugg small{ color:var(--dim); }
+  .row-btns{ display:flex; gap:10px; margin-top:12px; }
+  .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:48px; padding:0 20px; border-radius:100px; font-weight:700; font-size:18px; border:0; cursor:pointer; text-decoration:none; }
+  .btn-main{ background:var(--pink); color:#fff; }
+  .btn-main:disabled{ opacity:.45; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; border:1px solid var(--line); color:var(--cream); }
+  .btn-cream{ background:var(--cream); color:#1a0b2e; }
+
+  /* resultado */
+  .result{ display:none; text-align:center; }
+  .result.show{ display:block; animation:pop .35s cubic-bezier(.2,.9,.3,1.3); }
+  @keyframes pop{ from{ transform:scale(.94); opacity:0; } }
+  .cover{ width:120px; height:120px; margin:0 auto 14px; border-radius:18px; background:linear-gradient(135deg,#2E7BFF,#A45BFF 60%,#FF4FA3); display:grid; place-items:center; font-family:'Bebas Neue',sans-serif; font-weight:900; font-size:30px; }
+  .result h3{ font-family:'Bebas Neue',sans-serif; font-size:22px; }
+  .result .artist{ color:var(--dim); margin-top:4px; }
+  .pts{ margin:16px auto; display:inline-flex; gap:8px; align-items:baseline; font-family:'Bebas Neue',sans-serif; font-size:34px; color:var(--gold); }
+  .pts small{ font-family:'Bebas Neue',sans-serif; font-size:17px; color:var(--dim); }
+  .share{ margin:6px auto 18px; max-width:320px; background:rgba(11,6,24,.6); border:1px solid var(--line); border-radius:14px; padding:14px; font-family:'Bebas Neue',sans-serif; font-size:16px; line-height:1.7; white-space:pre-line; text-align:left; }
+
+  /* ranking */
+  .tabs{ display:flex; gap:6px; margin:14px 0; }
+  .tab{ min-height:40px; padding:0 14px; border-radius:100px; border:1px solid var(--line); background:none; cursor:pointer; font-weight:600; font-size:16.5px; }
+  .tab[aria-selected="true"]{ background:var(--cream); color:#1a0b2e; border-color:var(--cream); }
+  .prize{ display:flex; gap:12px; align-items:center; padding:14px; border-radius:16px; background:linear-gradient(90deg,rgba(255,194,75,.18),rgba(255,106,43,.1)); border:1px solid rgba(255,194,75,.4); font-size:16.5px; line-height:1.45; }
+  .prize b{ color:var(--gold); }
+  .prize svg{ width:28px; height:28px; flex:none; color:var(--gold); }
+  ol.rank{ list-style:none; margin-top:12px; }
+  ol.rank li{ display:grid; grid-template-columns:28px 32px 1fr auto; gap:10px; align-items:center; padding:10px 6px; border-bottom:1px solid var(--line); font-size:17px; }
+  ol.rank li .n{ font-family:'Bebas Neue',sans-serif; color:var(--dim); }
+  ol.rank li .av{ width:32px; height:32px; border-radius:50%; display:grid; place-items:center; font-size:15px; font-weight:800; background:rgba(253,244,232,.1); }
+  ol.rank li b{ font-family:'Bebas Neue',sans-serif; font-variant-numeric:tabular-nums; }
+  ol.rank li.top1 .n{ color:var(--gold); } ol.rank li.top1 .av{ background:var(--gold); color:#2a1700; }
+  ol.rank li.you{ background:rgba(255,79,163,.1); border-radius:12px; border-color:transparent; }
+  .fire{ color:var(--orange-soft); font-size:15px; margin-left:6px; }
+
+  /* login */
+  .auth{ display:grid; gap:20px; }
+  @media (min-width:900px){ .auth{ grid-template-columns:.9fr 1.1fr; align-items:center; } }
+  .auth-card{ max-width:440px; width:100%; }
+  .auth-tabs{ display:grid; grid-template-columns:1fr 1fr; background:rgba(11,6,24,.6); border-radius:100px; padding:4px; margin-bottom:20px; }
+  .auth-tabs button{ min-height:42px; border-radius:100px; border:0; background:none; cursor:pointer; font-weight:700; }
+  .auth-tabs button[aria-selected="true"]{ background:var(--cream); color:#1a0b2e; }
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:16.5px; font-weight:600; margin-bottom:6px; }
+  .field input{ width:100%; min-height:50px; border-radius:12px; border:1px solid var(--line); background:rgba(11,6,24,.6); padding:0 14px; font-size:19px; }
+  .field input:focus{ border-color:var(--pink); outline:none; }
+  .field small{ display:block; color:var(--dim); font-size:15.5px; margin-top:6px; }
+  .pw{ position:relative; }
+  .pw button{ position:absolute; right:6px; top:50%; transform:translateY(-50%); min-height:40px; padding:0 12px; border:0; background:none; cursor:pointer; color:var(--dim); font-size:16px; font-weight:600; }
+  .check{ display:flex; gap:10px; align-items:flex-start; font-size:16.5px; color:var(--dim); margin:6px 0 18px; line-height:1.45; }
+  .check input{ width:20px; height:20px; margin-top:1px; accent-color:var(--pink); flex:none; }
+  .why li{ list-style:none; display:flex; gap:12px; align-items:flex-start; padding:12px 0; border-bottom:1px solid var(--line); color:var(--dim); font-size:17.5px; line-height:1.5; }
+  .why li b{ color:var(--cream); display:block; }
+  .why .ic{ flex:none; width:38px; height:38px; border-radius:12px; display:grid; place-items:center; background:rgba(255,79,163,.14); color:var(--pink); }
+  .why svg{ width:20px; height:20px; }
+
+  .rules{ color:var(--dim); font-size:16px; line-height:1.7; }
+  .rules b{ color:var(--cream); }
+  footer{ border-top:1px solid var(--line); padding:30px 0; color:var(--dim); font-size:16px; margin-top:30px; }
+  @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="mockbar">Maqueta de FanGuess · el audio y los puntos son de ejemplo</div>
+
+<nav class="nav" aria-label="Principal">
+  <div class="wrap">
+    <a class="logo" href="index.html"><img src="img/fan-tribute-icon.png" alt="" width="72" height="24"><b>FAN TRIBUTE</b></a>
+    <div class="links">
+      <a href="index.html#eventos">Eventos</a><a href="index.html#ciudades">Ciudades</a><a href="fanguess.html" aria-current="page">FanGuess</a><a href="index.html#nosotros">Nosotros</a>
+    </div>
+    <div class="me">
+      <span class="streak" title="Racha actual">🔥 12</span>
+      <a class="avatar" href="#entrar" aria-label="Mi cuenta: Juanse">JS</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <span class="mono" style="color:var(--orange-soft)">Reto diario · lunes 9 nov</span>
+      <h1>Adivina el <span>clásico</span></h1>
+      <p class="lead">Escucha un pedacito y di cuál es. Tienes 3 intentos: cada fallo te deja oír un poco más. Menos audio, más puntos.</p>
+    </div>
+    <div>
+      <div class="kpis">
+        <div class="kpi"><b>🔥 12</b><span>días de racha</span></div>
+        <div class="kpi"><b>1.980</b><span>puntos del mes</span></div>
+        <div class="kpi"><b>#7</b><span>en el ranking</span></div>
+      </div>
+      <div class="week" aria-label="Tu semana: jugaste 6 de 7 días">
+        <i class="on">L</i><i class="on">M</i><i class="on">M</i><i class="on">J</i><i class="on">V</i><i class="on">S</i><i class="today">D</i>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:10px">
+    <h2>Elige tu <span>nivel</span></h2>
+    <p class="sub">5 canciones por nivel cada día. Los niveles difíciles dan más puntos.</p>
+    <div class="levels" role="group" aria-label="Niveles">
+      <button class="lvl" style="--c:var(--l1)" aria-pressed="false" data-lv="Warm Up" data-c="var(--l1)">
+        <div class="top"><div class="bars" aria-hidden="true"><i class="f"></i><i></i><i></i><i></i></div><span class="done">5/5 ✓</span></div>
+        <h3>Warm Up</h3><p>Los himnos que todo el mundo conoce.</p>
+        <div class="meta"><span>Fácil</span><b>×1 pts</b></div>
+      </button>
+      <button class="lvl" style="--c:var(--l2)" aria-pressed="false" data-lv="Build Up" data-c="var(--l2)">
+        <div class="top"><div class="bars" aria-hidden="true"><i class="f"></i><i class="f"></i><i></i><i></i></div><span class="done" style="background:rgba(63,184,255,.15);color:var(--l2)">2/5</span></div>
+        <h3>Build Up</h3><p>Hits de festival de 2012 a 2016.</p>
+        <div class="meta"><span>Medio</span><b>×2 pts</b></div>
+      </button>
+      <button class="lvl" style="--c:var(--l3)" aria-pressed="true" data-lv="Drop" data-c="var(--l3)">
+        <div class="top"><div class="bars" aria-hidden="true"><i class="f"></i><i class="f"></i><i class="f"></i><i></i></div></div>
+        <h3>Drop</h3><p>Remixes y canciones menos conocidas.</p>
+        <div class="meta"><span>Difícil</span><b>×3 pts</b></div>
+      </button>
+      <button class="lvl" style="--c:var(--l4)" aria-pressed="false" data-lv="Main Stage" data-c="var(--l4)">
+        <div class="top"><div class="bars" aria-hidden="true"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></div></div>
+        <h3>Main Stage</h3><p>Solo el intro y sin pistas. Para fiebres.</p>
+        <div class="meta"><span>Experto</span><b>×5 pts</b></div>
+      </button>
+    </div>
+  </section>
+
+  <section id="jugar" style="padding-top:10px">
+    <div class="game">
+      <div class="panel" aria-live="polite">
+        <div id="playing">
+          <div class="round">
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span class="pill lv" id="lvPill" style="--c:var(--l3)">Drop</span><span class="pill">Canción 3 de 5</span></div>
+            <div class="lives" aria-label="Intentos"><span class="mono" style="margin-right:4px">Intentos</span><i></i><i></i><i></i></div>
+          </div>
+
+          <div class="player">
+            <button class="play" id="play" aria-label="Escuchar el fragmento">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            </button>
+            <div class="track">
+              <div class="timeline"><div class="unlocked" id="unlocked" style="width:6.6%"></div><div class="progress" id="progress"></div></div>
+              <div class="ticks"><span class="on" id="t1">1 s</span><span id="t2">4 s</span><span id="t3">10 s</span><span>15 s</span></div>
+            </div>
+          </div>
+          <div class="sw idle" id="wave" aria-hidden="true" style="height:64px;margin-top:18px"></div>
+
+          <div class="guesses" id="guesses">
+            <div class="g">Intento 1</div><div class="g">Intento 2</div><div class="g">Intento 3</div>
+          </div>
+
+          <div class="answer">
+            <label for="ans">Tu respuesta</label>
+            <div class="sugg" id="sugg" role="listbox" aria-label="Sugerencias"></div>
+            <input id="ans" autocomplete="off" placeholder="Escribe la canción o el artista…">
+          </div>
+          <div class="row-btns">
+            <button class="btn btn-ghost" id="skip">Más audio (pierdes 1 intento)</button>
+            <button class="btn btn-main" id="send" disabled>Responder</button>
+          </div>
+          <p class="sub" style="margin:14px 0 0">Prueba: escribe “levels” o elige una sugerencia.</p>
+        </div>
+
+        <div class="result" id="result">
+          <div class="cover" aria-hidden="true">LV</div>
+          <span class="mono" id="resTag" style="color:var(--ok)">¡Le pegaste!</span>
+          <h3 style="margin-top:8px">Levels</h3>
+          <p class="artist">Avicii · 2011</p>
+          <div class="pts"><span id="resPts">+450</span><small>puntos</small></div>
+          <div class="share" id="shareTxt"></div>
+          <div class="row-btns" style="justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-cream" id="copy">Copiar resultado</button>
+            <button class="btn btn-ghost" id="again">Siguiente canción</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel" aria-labelledby="rk">
+        <h2 id="rk">Ranking</h2>
+        <div class="tabs" role="tablist">
+          <button class="tab" role="tab" aria-selected="false">Semana</button>
+          <button class="tab" role="tab" aria-selected="true">Noviembre</button>
+        </div>
+        <div class="prize">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 9a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v6a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2z"/><path d="M14 7v10" stroke-dasharray="2 2"/></svg>
+          <span>El <b>#1 del mes</b> gana una <b>entrada gratis</b> a cualquier evento de Fan Tribute. Cierra el 30 nov a las 11:59 p. m.</span>
+        </div>
+        <ol class="rank">
+          <li class="top1"><span class="n">1</span><span class="av">VA</span><span>@valen.edm <span class="fire">🔥 28</span></span><b>2.840</b></li>
+          <li><span class="n">2</span><span class="av">JD</span><span>@juanse_drop <span class="fire">🔥 19</span></span><b>2.615</b></li>
+          <li><span class="n">3</span><span class="av">LF</span><span>@laura.festival <span class="fire">🔥 22</span></span><b>2.390</b></li>
+          <li><span class="n">4</span><span class="av">MR</span><span>@mateo.rave</span><b>2.210</b></li>
+          <li><span class="n">5</span><span class="av">CA</span><span>@cami.anthems</span><b>2.105</b></li>
+          <li><span class="n">6</span><span class="av">SB</span><span>@sebas.bpm</span><b>2.040</b></li>
+          <li class="you"><span class="n">7</span><span class="av">JS</span><span>Tú <span class="fire">🔥 12</span></span><b id="myPts">1.980</b></li>
+        </ol>
+      </aside>
+    </div>
+  </section>
+
+  <section id="entrar">
+    <div class="auth">
+      <div>
+        <span class="mono" style="color:var(--orange-soft)">Tu cuenta</span>
+        <h2 style="margin-top:8px">Entra para guardar tu <span>racha</span></h2>
+        <ul class="why" style="margin-top:14px">
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-7 2 1 3 3 3 5"/></svg></span><span><b>Tu racha y tus puntos se guardan</b>Juega desde el celular o el computador.</span></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/></svg></span><span><b>Entras al ranking del mes</b>El #1 se lleva una entrada gratis.</span></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><span><b>Solo para FanGuess</b>Para comprar boletas no necesitas cuenta.</span></li>
+        </ul>
+      </div>
+      <div class="panel auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button role="tab" aria-selected="false" data-t="in">Ingresar</button>
+          <button role="tab" aria-selected="true" data-t="up">Crear cuenta</button>
+        </div>
+        <form onsubmit="return false" novalidate>
+          <div class="field up"><label for="u">Nombre de usuario</label><input id="u" autocomplete="username" placeholder="@tuusuario"><small>Así sales en el ranking.</small></div>
+          <div class="field"><label for="e">Correo</label><input id="e" type="email" autocomplete="email" placeholder="tucorreo@gmail.com"></div>
+          <div class="field"><label for="p">Contraseña</label><div class="pw"><input id="p" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres"><button type="button" id="pwT" aria-label="Mostrar contraseña">Mostrar</button></div></div>
+          <div class="field up"><label for="c">Ciudad</label><input id="c" autocomplete="address-level2" placeholder="Bogotá, Medellín…"></div>
+          <label class="check up"><input type="checkbox"> Soy mayor de 18 años y acepto las reglas del concurso.</label>
+          <button class="btn btn-main" style="width:100%" id="go">Crear cuenta y jugar</button>
+          <p class="sub" style="text-align:center;margin:14px 0 0">Te enviamos un correo para confirmar tu cuenta.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <p class="rules"><b>Reglas del premio (resumen):</b> mayores de 18 · una cuenta por persona, verificada por correo · gana el puntaje más alto del mes; en empate gana quien tenga la racha más larga · la entrada sirve para cualquier evento de Fan Tribute en los 3 meses siguientes y no se cambia por dinero.</p>
+  </section>
+</main>
+
+<footer><div class="wrap">FanGuess es un juego de Fan Tribute · los fragmentos de audio vienen de Deezer · eventos tributo, artistas no presentes.</div></footer>
+
+<script>
+function pintarOnda(el, n) {
+  var stops = [[0, [40, 190, 130]], [.38, [160, 245, 220]], [.62, [205, 175, 255]], [1, [140, 50, 240]]];
+  function col(t, k) {
+    for (var s = 1; s < stops.length; s++) if (t <= stops[s][0]) {
+      var a = stops[s - 1], b = stops[s], u = (t - a[0]) / (b[0] - a[0]);
+      return 'rgb(' + a[1].map(function (v, j) { return Math.round((v + (b[1][j] - v) * u) * k); }).join(',') + ')';
+    }
+  }
+  var seed = 7; function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  for (var i = 0; i < n; i++) {
+    var t = i / (n - 1), b = document.createElement('i');
+    var env = .55 + .45 * Math.sin(t * Math.PI * 2.2 + .4);
+    b.style.setProperty('--h', Math.round(18 + 80 * env * (.55 + .45 * rnd())));
+    b.style.setProperty('--col', col(t, .85)); b.style.setProperty('--hi', col(t, 1.12 > 1 ? 1 : 1));
+    b.style.setProperty('--d', (.45 + rnd() * .5).toFixed(2) + 's'); b.style.setProperty('--dl', (-rnd()).toFixed(2) + 's');
+    el.appendChild(b);
+  }
+}
+(function () {
+  // ondas
+  var wave = document.getElementById('wave');
+  pintarOnda(wave, window.innerWidth < 560 ? 40 : 70);
+
+  // niveles
+  document.querySelectorAll('.lvl').forEach(function (l) {
+    l.addEventListener('click', function () {
+      document.querySelectorAll('.lvl').forEach(function (x) { x.setAttribute('aria-pressed', x === l); });
+      var p = document.getElementById('lvPill'); p.textContent = l.dataset.lv; p.style.setProperty('--c', l.dataset.c);
+      document.getElementById('jugar').scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // juego de ejemplo: la respuesta es "Levels - Avicii"
+  var CORTES = [1, 4, 10], TOTAL = 15, intento = 0, terminado = false;
+  var CANCIONES = [['Levels', 'Avicii'], ['Wake Me Up', 'Avicii'], ['Animals', 'Martin Garrix'], ['Lean On', 'Major Lazer & DJ Snake'], ['Titanium', 'David Guetta ft. Sia'], ['Don’t You Worry Child', 'Swedish House Mafia'], ['Tremor', 'Dimitri Vegas, Martin Garrix'], ['Clarity', 'Zedd'], ['Summer', 'Calvin Harris'], ['Turn Down for What', 'DJ Snake & Lil Jon']];
+  var play = document.getElementById('play'), prog = document.getElementById('progress'), unl = document.getElementById('unlocked');
+  var ans = document.getElementById('ans'), sugg = document.getElementById('sugg'), send = document.getElementById('send');
+  var lives = document.querySelectorAll('.lives i'), gs = document.querySelectorAll('.g'), marcas = [];
+
+  function seg() { return CORTES[Math.min(intento, 2)]; }
+  play.addEventListener('click', function () {
+    var dur = seg() * 1000, t0 = performance.now();
+    wave.classList.remove('idle'); play.disabled = true;
+    (function step(t) {
+      var k = Math.min(1, (t - t0) / dur);
+      prog.style.width = (k * seg() / TOTAL * 100) + '%';
+      if (k < 1) requestAnimationFrame(step); else { wave.classList.add('idle'); play.disabled = false; setTimeout(function () { prog.style.width = 0; }, 400); }
+    })(t0);
+  });
+
+  ans.addEventListener('input', function () {
+    var q = ans.value.trim().toLowerCase(); sugg.innerHTML = '';
+    send.disabled = !q;
+    if (q.length < 2) { sugg.classList.remove('open'); return; }
+    CANCIONES.filter(function (c) { return (c[0] + ' ' + c[1]).toLowerCase().indexOf(q) > -1; }).slice(0, 4).forEach(function (c) {
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('role', 'option');
+      b.innerHTML = c[0] + ' <small>· ' + c[1] + '</small>';
+      b.addEventListener('click', function () { ans.value = c[0] + ' – ' + c[1]; sugg.classList.remove('open'); send.disabled = false; ans.focus(); });
+      sugg.appendChild(b);
+    });
+    sugg.classList.toggle('open', !!sugg.children.length);
+  });
+
+  var ICON_X = '<svg viewBox="0 0 24 24" fill="none" stroke="#FF5A6E" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  var ICON_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="#3DDC97" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+  var ICON_SKIP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 5l7 7-7 7M13 5l7 7-7 7"/></svg>';
+
+  function fallo(texto, skip) {
+    gs[intento].className = 'g ' + (skip ? 'skip' : 'bad'); gs[intento].innerHTML = (skip ? ICON_SKIP : ICON_X) + texto;
+    lives[intento].classList.add('lost'); marcas.push(skip ? '⬜' : '🟥'); intento++;
+    if (intento >= 3) return fin(false);
+    unl.style.width = (seg() / TOTAL * 100) + '%';
+    document.getElementById('t' + (intento + 1)).classList.add('on');
+  }
+  function fin(ok) {
+    terminado = true;
+    var pts = ok ? [450, 300, 150][intento] : 0;
+    if (ok) { gs[intento].className = 'g ok'; gs[intento].innerHTML = ICON_OK + 'Levels – Avicii'; marcas.push('🟩'); }
+    while (marcas.length < 3) marcas.push('⬛');
+    setTimeout(function () {
+      document.getElementById('playing').style.display = 'none';
+      document.getElementById('resTag').textContent = ok ? '¡Le pegaste!' : 'Era esta…';
+      document.getElementById('resTag').style.color = ok ? 'var(--ok)' : 'var(--bad)';
+      document.getElementById('resPts').textContent = '+' + pts;
+      document.getElementById('shareTxt').textContent = 'FanGuess 🎧 Drop · 9 nov\n' + marcas.join('') + '  🔥 ' + (ok ? 13 : 0) + '\nfantribute.co/fanguess';
+      if (ok) document.getElementById('myPts').textContent = (1980 + pts).toLocaleString('es-CO');
+      document.getElementById('result').classList.add('show');
+    }, 600);
+  }
+  send.addEventListener('click', function () {
+    if (terminado || !ans.value.trim()) return;
+    if (/levels/i.test(ans.value)) fin(true); else fallo(ans.value.trim(), false);
+    ans.value = ''; send.disabled = true; sugg.classList.remove('open');
+  });
+  ans.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); send.click(); } });
+  document.getElementById('skip').addEventListener('click', function () { if (!terminado) fallo('Pediste más audio', true); });
+  document.getElementById('copy').addEventListener('click', function () {
+    var t = document.getElementById('shareTxt').textContent;
+    try { navigator.clipboard.writeText(t); this.textContent = '¡Copiado!'; } catch (e) {}
+  });
+  document.getElementById('again').addEventListener('click', function () { location.reload(); });
+
+  // pestañas de cuenta
+  document.querySelectorAll('.auth-tabs button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.auth-tabs button').forEach(function (x) { x.setAttribute('aria-selected', x === b); });
+      var up = b.dataset.t === 'up';
+      document.querySelectorAll('.up').forEach(function (el) { el.style.display = up ? '' : 'none'; });
+      document.getElementById('go').textContent = up ? 'Crear cuenta y jugar' : 'Ingresar';
+      document.getElementById('p').autocomplete = up ? 'new-password' : 'current-password';
+    });
+  });
+  document.getElementById('pwT').addEventListener('click', function () {
+    var p = document.getElementById('p'), show = p.type === 'password';
+    p.type = show ? 'text' : 'password'; this.textContent = show ? 'Ocultar' : 'Mostrar';
+    this.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+  });
+})();
+</script>
+</body>
+</html>

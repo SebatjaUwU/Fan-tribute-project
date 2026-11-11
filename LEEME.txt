@@ -1,0 +1,22 @@
+FAN TRIBUTE - archivos (11 de noviembre de 2026)
+
+sitio/
+  El sitio completo, listo para Netlify o para un repositorio de GitHub.
+  Incluye las paginas de eventos con la fuente oficial Bebas Neue:
+  Medellin, Back to Classic 2000, Last Summer 2016, confirmacion de pago y boleta.
+  fanguess/ es la version de prueba del juego (suena con musica real de Apple).
+  Para Netlify: comprime el CONTENIDO de esta carpeta y subelo en Deploys.
+
+maqueta-inicio-nuevo/
+  El diseno nuevo de la pagina de inicio y FanGuess (playa, Bebas Neue, Tailwind).
+  Todavia es maqueta: tiene datos de ejemplo y los botones no llevan a las paginas reales.
+  Abre index.html en el navegador para verla.
+
+apps-script/
+  Code-Medellin.gs     -> Apps Script de ventas y QR de Medellin (con Preventa 2).
+  Promo-BTC2000.gs     -> correo masivo de Back to Classic (max 75 al dia).
+  Encuesta-Halloween.gs -> encuesta de satisfaccion de Back to Halloween.
+  Ninguno tiene llaves: las llaves van en Propiedades del script.
+
+guia-fan-tribute.md
+  La guia de marca, eventos, precios y sistemas para usar en otros chats de Claude.

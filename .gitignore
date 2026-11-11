@@ -1,0 +1,22 @@
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+
+# Archivos de despliegue y temporales
+*.zip
+node_modules/
+.netlify/
+*.tmp
+~$*
+
+# Nunca subir llaves
+.env
+.env.*
+*.pem
+*secret*
+*token*
