@@ -6,7 +6,7 @@
  *    y las guarda en caché (la página nunca ve el token).
  *  - Una vez al día revisa el token IGAA y lo renueva cuando le quedan menos de 15 días
  *    (dura 60 días; Meta solo deja renovarlo si tiene más de 24 horas).
- *  - Publica un JSON en la URL de la implementación web, que lee index-nuevo.html.
+ *  - Publica un JSON en la URL de la implementación web, que lee index.html.
  *
  * Instalación (una sola vez):
  *  1. script.google.com → Nuevo proyecto → pega este archivo.
@@ -15,7 +15,7 @@
  *  3. Ejecuta instalar() y acepta los permisos.
  *  4. Implementar → Nueva implementación → Aplicación web
  *       Ejecutar como: Yo · Quién tiene acceso: Cualquier persona
- *  5. Copia la URL que termina en /exec y pégala en IG_FEED_URL de sitio/index-nuevo.html.
+ *  5. Copia la URL que termina en /exec y pégala en IG_FEED_URL de sitio/index.html.
  */
 
 const IG_CAMPOS = 'id,caption,media_type,media_url,thumbnail_url,permalink,media_product_type,timestamp';

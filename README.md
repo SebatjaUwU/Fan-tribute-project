@@ -8,8 +8,8 @@ Sitio en vivo: https://fantributecol.netlify.app
 
 ```text
 sitio/                  El sitio que se publica (Netlify). Todo lo que va en vivo está aquí.
-  index.html            Inicio actual (el que está en vivo)
-  index-nuevo.html      Inicio nuevo (playa, Bebas Neue, Tailwind) — pendiente de aprobación, noindex
+  index.html            Inicio (playa, Bebas Neue, Tailwind; estilos en ASSETS/tw.css)
+  inicio-anterior.html  Portada anterior (respaldo, noindex)
   ASSETS/               Logo, ícono, tw.css del inicio nuevo y fotos
   comprar/              Boletería
   edc-preparty/         Pre-EDC Bogotá (y carpeta ASSETS compartida de flyers, videos y QR)

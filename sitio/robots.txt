@@ -11,6 +11,6 @@ Disallow: /eventos-hub/eventos/confirmacion-medellin.html
 Disallow: /eventos-hub/eventos/confirmacion-halloween-2016.html
 Disallow: /eventos-hub/eventos/back-to-halloween-2016-prueba1.html
 Disallow: /fanguess/
-Disallow: /index-nuevo.html
+Disallow: /inicio-anterior.html
 
 Sitemap: https://fantributecol.netlify.app/sitemap.xml
