@@ -8,7 +8,7 @@
 <link rel="icon" href="../ASSETS/fan-tribute-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat+Brush&family=JetBrains+Mono:wght@700&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
   /* Fuente única: Bebas Neue · mismo sistema visual de las páginas de eventos */
   body{ font-synthesis:none; letter-spacing:.03em; }
@@ -70,14 +70,16 @@
   @media (prefers-reduced-motion:reduce){ .game.falla, .game.falla::after, .game.falla .player, .game.falla .eq{ animation:none; } }
   .round{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
   .lives{ display:flex; gap:6px; align-items:center; }
-  .lives i{ display:block; width:28px; height:28px; color:var(--pink); }
-  .lives svg{ width:100%; height:100%; overflow:visible; }
-  .lives path{ fill:currentColor; stroke:currentColor; stroke-width:.7; stroke-linejoin:round; transform-box:fill-box; transition:transform .5s cubic-bezier(.3,1.4,.5,1), opacity .5s, fill .5s; }
-  .lives .h-l{ transform-origin:100% 100%; } .lives .h-r{ transform-origin:0 100%; }
-  .lives i.lost{ animation:latido-roto .45s ease; }
-  .lives i.lost .h-l{ transform:translate(-3px,3px) rotate(-22deg); opacity:.55; fill:var(--cream-dim); stroke:var(--cream-dim); }
-  .lives i.lost .h-r{ transform:translate(3px,5px) rotate(20deg); opacity:.55; fill:var(--cream-dim); stroke:var(--cream-dim); }
-  @keyframes latido-roto{ 0%{ transform:scale(1); } 30%{ transform:scale(1.35); } 55%{ transform:translateX(-3px) scale(1); } 75%{ transform:translateX(3px); } 100%{ transform:none; } }
+  .lives{ gap:12px; }
+  .lives i{ display:block; width:26px; height:24px; }
+  .lives svg{ width:100%; height:100%; overflow:visible; shape-rendering:crispEdges; }
+  .lives .k{ fill:#000; } .lives .r{ fill:#FF2E4D; } .lives .s{ fill:#B8102E; } .lives .w{ fill:#fff; }
+  .lives g{ transition:transform .6s steps(5), opacity .6s steps(5); }
+  .lives i.lost{ animation:latido-roto .45s steps(4); }
+  .lives i.lost .r{ fill:#5C5468; } .lives i.lost .s{ fill:#3A3346; } .lives i.lost .w{ fill:#8C849A; } .lives i.lost .k{ fill:#000; }
+  .lives i.lost .h-l{ transform:translate(-4px,2px); transform-origin:50% 100%; }
+  .lives i.lost .h-r{ transform:translate(4px,4px); transform-origin:50% 100%; }
+  @keyframes latido-roto{ 0%{ transform:scale(1); } 25%{ transform:scale(1.4); } 50%{ transform:translateX(-3px) scale(1.1); } 75%{ transform:translateX(3px); } 100%{ transform:none; } }
   .player{ display:flex; align-items:center; gap:20px; }
   .play{ flex:none; width:76px; height:76px; border:0; cursor:pointer; background:var(--cream); color:var(--black); display:grid; place-items:center; box-shadow:6px 6px 0 var(--violet); transition:transform .15s, box-shadow .15s; }
   .play:hover{ transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--orange); }
@@ -94,7 +96,6 @@
   .eq i{ flex:1 1 0; min-width:1px; height:calc(var(--h) * 1%); background:var(--cream); transform-origin:center; animation:eq var(--d) ease-in-out var(--dl) infinite alternate; }
   @keyframes eq{ from{ transform:scaleY(.25); } to{ transform:scaleY(1); } }
   .eq.idle i{ animation-play-state:paused; background:rgba(243,235,221,.22); transform:scaleY(.5); }
-  .guesses{ display:grid; margin:26px 0 22px; border-top:1px solid var(--rule); }
   .g{ min-height:52px; border-bottom:1px solid var(--rule); display:flex; align-items:center; gap:12px; font-size:21px; color:var(--cream-dim); }
   .g .tag{ flex:none; width:86px; font-size:14px; letter-spacing:.18em; }
   .g.bad .tag{ color:var(--pink); } .g.ok .tag{ color:var(--orange); } .g.skip .tag{ color:var(--cream-dim); }
@@ -150,7 +151,6 @@
     .play{ width:64px; height:64px; }
     .estado{ margin-top:10px; }
     .eq{ height:36px; margin-top:12px; }
-    .guesses{ margin:14px 0 12px; }
     .g{ min-height:40px; font-size:19px; }
     .answer input{ font-size:26px; min-height:48px; }
     .row-btns{ margin-top:18px; }
@@ -169,27 +169,26 @@
     -webkit-mask:radial-gradient(circle 11px at 0 50%, transparent 98%, #000) left/51% 100% no-repeat, radial-gradient(circle 11px at 100% 50%, transparent 98%, #000) right/51% 100% no-repeat;
             mask:radial-gradient(circle 11px at 0 50%, transparent 98%, #000) left/51% 100% no-repeat, radial-gradient(circle 11px at 100% 50%, transparent 98%, #000) right/51% 100% no-repeat; }
   .b-main{ padding:26px 30px 26px 30px; min-width:0; }
-  .b-kick{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--azul); padding-right:96px; }
   .b-title{ margin-top:4px; font-size:clamp(40px, 7vw, 60px); line-height:.88; padding-right:96px; overflow-wrap:anywhere; }
-  .b-artist{ margin-top:6px; font-family:'Caveat Brush',cursive; font-size:clamp(26px, 4.5vw, 34px); line-height:1; color:var(--azul); }
+  .b-artist{ margin-top:6px; font-size:clamp(28px, 4.8vw, 36px); line-height:1; letter-spacing:.03em; color:var(--azul); }
   .b-cover{ position:absolute; top:22px; right:26px; width:84px; height:84px; background:#000 center/cover no-repeat; transform:rotate(5deg); box-shadow:0 6px 14px rgba(0,0,0,.35); border:4px solid #fff; }
   .b-cover::before{ content:''; position:absolute; top:-12px; left:50%; width:46px; height:18px; margin-left:-23px; background:rgba(255,154,31,.75); transform:rotate(-4deg); }
   .b-hr{ border:0; border-top:2px dashed rgba(23,18,31,.3); margin:18px 0 14px; }
   .b-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:14px; }
   .b-name{ font-size:34px; line-height:1; }
-  .b-row small{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:6px; font-family:'Space Grotesk',sans-serif; font-size:15px; color:#3B3346; }
-  .b-chip{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; padding:3px 8px 2px; background:var(--azul); color:var(--paper); }
-  .b-extra{ display:inline-block; margin-top:10px; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; padding:5px 10px 4px; background:#C4421A; color:var(--paper); transform:rotate(-1deg); }
+  .b-row small{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:6px; font-size:19px; letter-spacing:.04em; color:#3B3346; }
+  .b-chip{ font-size:16px; letter-spacing:.12em; text-transform:uppercase; padding:3px 8px 2px; background:var(--azul); color:var(--paper); }
+  .b-extra{ display:inline-block; margin-top:10px; font-size:16px; letter-spacing:.12em; text-transform:uppercase; padding:5px 10px 3px; background:#C4421A; color:var(--paper); transform:rotate(-1deg); }
   .b-pts{ font-size:clamp(46px, 8vw, 64px); line-height:.9; color:var(--azul); font-variant-numeric:tabular-nums; }
-  .b-pts small{ display:block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; text-align:right; color:#3B3346; }
-  .b-facts{ display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:#3B3346; }
-  .b-facts b{ font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:.02em; color:var(--tinta); margin-right:4px; font-weight:400; }
+  .b-pts small{ display:block; font-size:15px; letter-spacing:.16em; text-align:right; color:#3B3346; }
+  .b-facts{ display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:14px; font-size:16px; letter-spacing:.12em; text-transform:uppercase; color:#3B3346; }
+  .b-facts b{ font-size:26px; letter-spacing:.02em; color:var(--tinta); margin-right:4px; font-weight:400; }
   .b-facts b.bpm{ color:var(--azul); }
   .b-player{ display:flex; align-items:center; gap:12px; margin-top:16px; padding:10px 12px; background:rgba(23,18,31,.08); }
   .boleto.pierde .b-player{ background:rgba(0,0,0,.18); }
   .b-play{ flex:none; width:44px; height:44px; border:0; border-radius:50%; background:var(--tinta); color:var(--bc); display:grid; place-items:center; cursor:pointer; }
   .b-play svg{ width:20px; height:20px; }
-  .b-time{ flex:none; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; letter-spacing:.06em; font-variant-numeric:tabular-nums; }
+  .b-time{ flex:none; font-size:18px; letter-spacing:.08em; font-variant-numeric:tabular-nums; }
   #bSeek{ flex:1; min-width:0; height:30px; -webkit-appearance:none; appearance:none; background:transparent; cursor:pointer; }
   #bSeek::-webkit-slider-runnable-track{ height:6px; background:linear-gradient(90deg, var(--azul) var(--p,0%), rgba(23,18,31,.22) var(--p,0%)); }
   #bSeek::-moz-range-track{ height:6px; background:rgba(23,18,31,.22); }
@@ -201,9 +200,6 @@
   .boleto .btn{ background:var(--tinta); color:var(--paper); box-shadow:5px 5px 0 var(--orange); font-size:22px; }
   .boleto .btn:hover{ box-shadow:7px 7px 0 var(--violet); }
   .boleto .link{ color:var(--tinta); font-size:19px; }
-  .b-side{ display:flex; justify-content:center; padding:24px 0 96px; }
-  .b-side span{ writing-mode:vertical-rl; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; letter-spacing:.3em; text-transform:uppercase; }
-  .b-barcode{ position:absolute; right:12px; bottom:20px; width:40px; height:64px; background:repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px, currentColor 4px 5px, transparent 5px 8px); opacity:.75; }
   .sello{ position:absolute; right:10px; top:100px; padding:6px 12px 3px; border:3px solid currentColor; font-size:30px; white-space:nowrap; z-index:2; line-height:1; letter-spacing:.04em; color:var(--azul); opacity:0; transform:rotate(-14deg) scale(2.4); pointer-events:none; mix-blend-mode:multiply; }
   /* acertó: la boleta cae, rebota y le ponen el sello */
   .boleto.gana{ animation:imprimir .7s cubic-bezier(.2,1.5,.4,1) both; }
@@ -219,6 +215,9 @@
   .boleto.pierde .btn{ background:#FBEFE0; color:#17121F; box-shadow:5px 5px 0 #17121F; }
   .boleto.pierde .sello{ color:#FBEFE0; mix-blend-mode:normal; animation:sellar .4s cubic-bezier(.3,1.6,.5,1) .5s forwards; }
   @keyframes triste{ 0%{ opacity:0; transform:translateY(-20px) rotate(-2deg); } 12%{ opacity:1; transform:rotate(-2deg); } 20%{ transform:translateX(-10px) rotate(-3deg); } 28%{ transform:translateX(10px) rotate(-1deg); } 36%{ transform:translateX(-6px) rotate(-2deg); } 44%{ transform:translateX(0) rotate(-2deg); } 75%{ transform:translateY(34px) rotate(5deg); } 88%{ transform:translateY(26px) rotate(3.5deg); } 100%{ transform:translateY(30px) rotate(4deg); } }
+  .result.falla .b-main{ animation:cortes .6s steps(1) .15s both; }
+  .result::after{ content:''; position:absolute; inset:0; pointer-events:none; opacity:0; background:repeating-linear-gradient(0deg, rgba(255,79,122,.2) 0 2px, transparent 2px 5px); mix-blend-mode:screen; z-index:4; }
+  .result.falla::after{ animation:interferencia .7s steps(1) .15s both; }
   .papelito{ position:absolute; top:0; width:9px; height:14px; pointer-events:none; z-index:3; }
   .gota{ position:absolute; width:8px; height:12px; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; background:#FF6B6B; opacity:0; pointer-events:none; z-index:3; }
   @media (max-width:560px){
@@ -431,7 +430,14 @@ function pintarOnda(el, n) {
   var puntos = 0, jugadas = 0, aciertos = 0, seguidas = 0, record = store.get('record') || 0;
   audio.preload = 'auto'; audio.setAttribute('playsinline', '');
   var wave = $('wave'); pintarOnda(wave, 72);
-  var CORAZON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="h-l" d="M12 6.5C10.5 4 7.9 3 5.6 3.6 2.8 4.4 1.5 7.5 2.6 10.3 3.9 13.6 8 17.3 12 21L10.6 16.5 12.8 13 10.8 9.5Z"/><path class="h-r" d="M12 6.5C13.5 4 16.1 3 18.4 3.6 21.2 4.4 22.5 7.5 21.4 10.3 20.1 13.6 16 17.3 12 21L10.6 16.5 12.8 13 10.8 9.5Z"/></svg>';
+  // Corazón en pixel art (13 x 12): k = borde, r = rojo, s = sombra, w = brillo
+  var MAPA = ['..kkk...kkk..', '.krrrk.krrrk.', 'krwwrrkrrrrsk', 'krwrrrrrrrrsk', 'krrrrrrrrrrsk', 'krrrrrrrrrrsk', '.krrrrrrrrsk.', '..krrrrrrsk..', '...krrrrsk...', '....krrsk....', '.....krk.....', '......k......'];
+  var GRIETA = [6, 6, 6, 7, 7, 6, 5, 6, 7, 6, 6, 6];
+  var CORAZON = (function () {
+    var L = '', R = '';
+    MAPA.forEach(function (fila, y) { fila.split('').forEach(function (c, x) { if (c === '.') return; var r = '<rect class="' + c + '" x="' + x * 2 + '" y="' + y * 2 + '" width="2" height="2"/>'; if (x < GRIETA[y]) L += r; else R += r; }); });
+    return '<svg viewBox="0 0 26 24" aria-hidden="true"><g class="h-l">' + L + '</g><g class="h-r">' + R + '</g></svg>';
+  })();
   document.querySelectorAll('.lives i').forEach(function (i) { i.innerHTML = CORAZON; });
 
   // ---- Canciones al azar, sin repetir hasta que salgan todas ----
@@ -658,7 +664,8 @@ function pintarOnda(el, n) {
   var quieto = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function animarBoleta(ok, p) {
     var b = $('boleto'), r = $('result');
-    b.classList.remove('gana', 'pierde'); void b.offsetWidth; b.classList.add(ok ? 'gana' : 'pierde');
+    b.classList.remove('gana', 'pierde'); r.classList.remove('falla'); void b.offsetWidth; b.classList.add(ok ? 'gana' : 'pierde');
+    if (!ok) { r.classList.add('falla'); setTimeout(function () { r.classList.remove('falla'); }, 1000); if (navigator.vibrate) try { navigator.vibrate([90, 50, 90, 50, 140]); } catch (e) {} }
     r.querySelectorAll('.papelito, .gota').forEach(function (x) { x.remove(); });
     // puntos que suben de 0 al valor
     var el = $('resPts'), t0 = performance.now();
