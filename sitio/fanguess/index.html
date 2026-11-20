@@ -481,6 +481,15 @@
   function ponerTono(h) {
     var r = document.documentElement.style;
     if (h == null) { ['--tono-a', '--tono-b', '--tono-c', '--tono-osc'].forEach(function (v) { r.removeProperty(v); }); return; }
+    if (typeof h === 'object') {
+      // portada blanca, negra o gris: se usan sus mismos grises (con el leve tinte que tenga)
+      var hh = Math.round(h.h), ss = Math.round(Math.min(h.s, .2) * 100), oscuro = Math.round(Math.max(.08, Math.min(h.l, .32)) * 100);
+      r.setProperty('--tono-a', 'hsl(' + hh + ' ' + ss + '% 96%)');
+      r.setProperty('--tono-b', 'hsl(' + hh + ' ' + ss + '% ' + (h.l < .5 ? 80 : 88) + '%)');
+      r.setProperty('--tono-c', 'hsl(' + hh + ' ' + ss + '% ' + (h.l < .5 ? 58 : 66) + '%)');
+      r.setProperty('--tono-osc', 'hsl(' + hh + ' ' + ss + '% ' + oscuro + '%)');
+      return;
+    }
     r.setProperty('--tono-a', 'hsl(' + ((h + 18) % 360) + ' 95% 72%)');
     r.setProperty('--tono-b', 'hsl(' + h + ' 92% 60%)');
     r.setProperty('--tono-c', 'hsl(' + ((h + 340) % 360) + ' 88% 52%)');
@@ -497,7 +506,11 @@
           var d = x.getImageData(0, 0, n, n).data, cubos = new Array(24).fill(0), sumH = new Array(24).fill(0);
           for (var i = 0; i < d.length; i += 4) { var hsl = rgbAhsl(d[i], d[i + 1], d[i + 2]); if (hsl[1] < .25 || hsl[2] < .12 || hsl[2] > .92) continue; var peso = hsl[1] * (1 - Math.abs(hsl[2] - .5) * 1.4), k = Math.floor(hsl[0] / 15) % 24; cubos[k] += peso; sumH[k] += hsl[0] * peso; }
           var mejor = -1, mk = 0; cubos.forEach(function (v, k) { if (v > mejor) { mejor = v; mk = k; } });
-          tonos[t.trackId] = mejor > 6 ? Math.round(sumH[mk] / cubos[mk]) : null;
+          if (mejor > 6) tonos[t.trackId] = Math.round(sumH[mk] / cubos[mk]);
+          else {
+            var R = 0, G = 0, B = 0, n2 = d.length / 4; for (var q = 0; q < d.length; q += 4) { R += d[q]; G += d[q + 1]; B += d[q + 2]; }
+            var m = rgbAhsl(R / n2, G / n2, B / n2); tonos[t.trackId] = { h: m[0], s: m[1], l: m[2] };
+          }
         } catch (e) { tonos[t.trackId] = null; }
         ok(tonos[t.trackId]);
       };
