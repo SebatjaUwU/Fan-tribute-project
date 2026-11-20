@@ -3,8 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
 <title>FanGuess · Adivina la canción | Fan Tribute</title>
+<meta name="description" content="Escucha un pedacito y adivina el clásico EDM: Avicii, Martin Garrix, Calvin Harris, David Guetta y más. Juega gratis y pelea el #1 del mes por una entrada a Fan Tribute.">
+<link rel="canonical" href="https://fantributecol.netlify.app/fanguess/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://fantributecol.netlify.app/fanguess/">
+<meta property="og:title" content="FanGuess · ¿Cuánto sabes de EDM?">
+<meta property="og:description" content="Escucha un pedacito y adivina el clásico. El #1 del mes gana una entrada a Fan Tribute.">
+<meta property="og:image" content="https://fantributecol.netlify.app/fanguess/og-fanguess.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_CO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B0A10">
 <link rel="icon" href="../ASSETS/fan-tribute-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -262,6 +273,50 @@
   /* pesos de la fuente */
   .b-title, .stat b, .b-pts, .b-name, .tape, .tag-anio, .sello, .btn{ font-weight:700; }
   .estado:empty{ display:none; }
+  /* pistas */
+  .pista{ display:flex; align-items:center; gap:14px; margin-top:14px; padding:10px 12px; border:1px dashed var(--rule); animation:in .4s ease both; }
+  .pista[hidden]{ display:none; }
+  .pista-img{ flex:none; width:58px; height:58px; overflow:hidden; background:#000; }
+  .pista-img i{ display:block; width:100%; height:100%; background:center/cover no-repeat; transform:scale(1.25); filter:blur(14px) saturate(1.2); transition:filter .6s; }
+  .pista.nivel2 .pista-img i{ filter:blur(6px); }
+  .pista-tag{ display:block; font-size:11.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--tono-b); }
+  .pista p{ font-size:15px; margin-top:2px; }
+  .pista b{ color:var(--cream); }
+  /* compartir */
+  .compartir{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; margin-top:14px; padding:13px 16px; border:0; border-radius:14px; cursor:pointer; color:#fff; font-size:16px; font-weight:700;
+    background:linear-gradient(45deg, #F9CE34, #EE2A7B 45%, #6228D7); box-shadow:0 8px 18px rgba(238,42,123,.3); transition:transform .15s; }
+  .compartir:hover{ transform:translateY(-2px); } .compartir:active{ transform:scale(.98); }
+  .compartir svg{ width:22px; height:22px; }
+  .compartir[disabled]{ opacity:.6; cursor:wait; }
+  .b-mencion{ margin:8px 0 14px; text-align:center; font-size:13.5px; color:#3B3346; }
+  .boleto.pierde .b-mencion{ color:rgba(251,239,224,.8); }
+  /* ranking */
+  .ranking{ border:1px solid var(--rule); background:var(--ink); padding:clamp(18px,3.5vw,30px); margin:-30px 0 60px; }
+  .rk-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; }
+  .rk-head h2{ font-family:Impact,'Anton',fantasy; font-weight:400; font-size:clamp(34px,6vw,48px); line-height:1; text-transform:uppercase; letter-spacing:.01em; }
+  .rk-mes{ font-size:12.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--tono-b); }
+  .rk-premio{ margin-top:10px; color:var(--cream-dim); font-size:15px; line-height:1.5; }
+  .rk-premio b{ color:var(--cream); }
+  .rk-yo{ margin-top:16px; display:flex; align-items:center; gap:12px 18px; flex-wrap:wrap; font-size:15px; }
+  .rk-yo .pos{ font-size:28px; font-weight:800; color:var(--tono-b); }
+  .rk-form{ display:grid; gap:14px; margin-top:16px; max-width:460px; }
+  .rk-form[hidden], .rk-yo[hidden]{ display:none; }
+  .rk-form label{ display:grid; gap:6px; font-size:12.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--cream-dim); }
+  .rk-form input{ min-height:48px; padding:8px 12px; border:1px solid var(--rule); background:var(--black); color:var(--cream); font:inherit; font-size:17px; text-transform:none; letter-spacing:0; border-radius:8px; }
+  .rk-form input:focus{ outline:none; border-color:var(--tono-b); }
+  .rk-acciones{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .rk-lista{ list-style:none; margin-top:18px; border-top:1px solid var(--rule); }
+  .rk-lista li{ display:grid; grid-template-columns:40px minmax(0,1fr) auto; align-items:center; gap:12px; min-height:50px; border-bottom:1px solid var(--rule); font-size:15px; }
+  .rk-lista .n{ font-weight:800; color:var(--cream-dim); font-variant-numeric:tabular-nums; }
+  .rk-lista li:nth-child(1) .n{ color:#FFD45C; } .rk-lista li:nth-child(2) .n{ color:#D8DCE6; } .rk-lista li:nth-child(3) .n{ color:#E39A5C; }
+  .rk-lista .q{ min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .rk-lista .q small{ color:var(--cream-dim); margin-left:6px; }
+  .rk-lista .p{ font-weight:800; font-variant-numeric:tabular-nums; }
+  .rk-lista li.yo{ background:color-mix(in srgb, var(--tono-b) 14%, transparent); }
+  .rk-lista .vacio{ display:block; padding:16px 0; color:var(--cream-dim); }
+  .rk-nota{ margin-top:12px; font-size:12.5px; color:var(--cream-dim); line-height:1.5; }
+  .toast{ position:fixed; left:50%; bottom:22px; z-index:50; max-width:min(92vw,420px); padding:12px 18px; border-radius:12px; background:var(--cream); color:#17121F; font-size:14.5px; font-weight:600; box-shadow:0 12px 30px rgba(0,0,0,.5); transform:translate(-50%,140%); opacity:0; transition:transform .35s cubic-bezier(.3,1.4,.5,1), opacity .3s; pointer-events:none; }
+  .toast.ver{ transform:translate(-50%,0); opacity:1; }
   .teclas{ display:none; }
   @media (hover:hover) and (pointer:fine){ .teclas{ display:inline; } .b-teclas{ display:block; margin:12px 0 16px; font-size:12.5px; color:#3B3346; } .boleto.pierde .b-teclas{ color:rgba(251,239,224,.75); } }
   kbd{ display:inline-block; min-width:1.6em; padding:1px 6px; border:1px solid currentColor; border-bottom-width:2px; border-radius:4px; font:inherit; font-size:.9em; text-align:center; opacity:.85; }
@@ -269,7 +324,6 @@
 </style>
 </head>
 <body>
-<div class="mockbar">Versión de prueba · 56 clásicos EDM de la playlist de Fan Tribute</div>
 
 <div class="wrap">
   <div class="topline">
@@ -307,6 +361,10 @@
         </div>
       </div>
       <p class="estado" id="estado" aria-live="polite"></p>
+      <div class="pista" id="pista" hidden>
+        <div class="pista-img"><i id="pistaImg"></i></div>
+        <div><span class="pista-tag">Pista</span><p id="pistaTxt"></p></div>
+      </div>
 
 
       <div class="answer">
@@ -342,6 +400,8 @@
           <div class="b-facts"><span><b class="bpm" id="fBpm">–</b>BPM aprox.</span><span><b id="fDur">–</b>duración</span><span><b id="fAnio">–</b>año</span></div>
           <hr class="b-hr">
           <p class="teclas b-teclas"><kbd>Espacio</kbd> pausa · <kbd>←</kbd> <kbd>→</kbd> mover 5 s · <kbd>Enter</kbd> siguiente</p>
+          <button class="compartir" id="compartir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>Compartir en tu historia</button>
+          <p class="b-mencion">Menciona a <b>@fantribute_col</b> en tu historia y te compartimos</p>
           <div class="b-btns">
             <button class="btn" id="next">Siguiente canción</button>
             <button class="link" id="reset">Reiniciar puntos</button>
@@ -353,7 +413,25 @@
     </div>
 
   </main>
+
+  <section class="ranking" id="ranking" aria-labelledby="rkTitulo">
+    <div class="rk-head">
+      <h2 id="rkTitulo">Ranking del mes</h2>
+      <span class="rk-mes" id="rkMes"></span>
+    </div>
+    <p class="rk-premio"><b>El #1 del mes gana una entrada gratis</b> a cualquier evento de Fan Tribute. Te escribimos por Instagram a <b>@fantribute_col</b>.</p>
+    <div class="rk-yo" id="rkYo"></div>
+    <form class="rk-form" id="rkForm" hidden>
+      <label>Tu nombre<input id="rkNombre" maxlength="24" autocomplete="nickname" required></label>
+      <label>Tu Instagram<input id="rkIg" maxlength="31" placeholder="@usuario" autocomplete="off" autocapitalize="off" required></label>
+      <div class="rk-acciones"><button class="btn" type="submit">Guardar y entrar</button><button class="link" type="button" id="rkCancelar">Cancelar</button></div>
+      <p class="rk-nota">En el ranking se ve tu nombre y el inicio de tu @. Solo lo usamos para contactar al ganador.</p>
+    </form>
+    <ol class="rk-lista" id="rkLista"></ol>
+    <p class="rk-nota">Suman los puntos de todas tus partidas del mes y se reinicia el día 1. Revisamos las partidas para evitar trampas.</p>
+  </section>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <footer><div class="wrap">FanGuess · Fan Tribute · Fragmentos, carátulas y datos de Apple (iTunes Search). El BPM se calcula en tu navegador con el fragmento, es aproximado.</div></footer>
 
@@ -367,6 +445,9 @@
   // Alan Walker, Don Diablo y Galantis). Son los códigos de cada canción en Apple Music: para agregar
   // una, copia el número del final del link de la canción (music.apple.com/co/song/.../NÚMERO).
   var CANCIONES = [1440872929, 1440834312, 1445311545, 1440787352, 1440829549, 1670593167, 1196786344, 1137641426, 1416740913, 1350850469, 1346088035, 1460655320, 1613929502, 1350836690, 563923509, 922876189, 1364709436, 922876184, 1001677305, 563923516, 922876187, 1811333176, 1153704956, 922876183, 1715687117, 726149086, 726390516, 1640751223, 1715686788, 1688187513, 726390581, 1432646030, 971262282, 491596647, 491596732, 442170037, 833843699, 491596731, 434543346, 609821696, 1091453645, 1091453642, 1440859014, 1440859246, 1445184674, 6798736832, 6799141274, 6798741949, 1440756789, 1440757093, 1196294581, 1277697262, 1336550428, 1337751485, 984746629, 984746634];
+  // ---- Ranking: pega aquí la URL /exec del Apps Script (apps-script/FanGuess-Ranking.gs) ----
+  var RANKING_URL = '';
+  var IG_FT = 'fantribute_col', LINK_JUEGO = (/^https?:/.test(location.protocol) && location.host ? location.host : 'fantributecol.netlify.app') + '/fanguess';
   var PAIS = 'co', CORTES = [1, 4, 10], TOTAL = 15, PUNTOS = [300, 200, 100];
 
   // ---- iTunes Search por JSONP (no necesita cuenta ni llave) ----
@@ -609,7 +690,7 @@
   siguiente();
 
   function iniciarRonda() {
-    intento = 0; terminado = false;
+    intento = 0; terminado = false; $('pista').hidden = true;
     var t = actual, listo = false;
     audio.src = t.previewUrl; audio.load();
     estado('Preparando la canción', 'carga'); $('play').classList.add('wait');
@@ -737,8 +818,16 @@
     document.querySelectorAll('.lives i')[intento].classList.add('lost');
     intento++;
     if (intento >= 3) return finRonda(false);
-    $('t' + (intento + 1)).classList.add('on'); pintarBarras(0);
+    $('t' + (intento + 1)).classList.add('on'); pintarBarras(0); mostrarPista();
     estado(ultimoFallo + 'se desbloquearon ' + CORTES[intento] + ' segundos · dale play otra vez', 'err');
+  }
+
+  // ---- Pistas: 1er fallo carátula muy borrosa + año; 2do fallo menos borrosa + inicial del artista ----
+  function mostrarPista() {
+    var c = actual, anio = String(c.releaseDate || '').slice(0, 4), art = String(c.artistName || '').trim();
+    $('pistaImg').style.backgroundImage = 'url(' + img(c.artworkUrl100, 200) + ')';
+    $('pista').className = 'pista nivel' + intento; $('pista').hidden = false;
+    $('pistaTxt').innerHTML = intento === 1 ? 'Salió en <b>' + esc(anio) + '</b>' : 'Salió en <b>' + esc(anio) + '</b> · el artista empieza por <b>«' + esc(art.charAt(0).toUpperCase()) + '»</b>';
   }
 
   function minSeg(ms) { if (!ms) return '–'; var s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
@@ -764,6 +853,8 @@
       bpmDe(c).then(function (b) { if (actual === c) $('fBpm').textContent = b || '–'; });
       $('result').classList.add('show');
       animarBoleta(ok, p);
+      ultimaRonda = { c: c, ok: ok, p: p, intento: enIntento, nivel: nivel };
+      enviarRonda(c, ok, enIntento, p);
       // al terminar suena la canción y se puede mover o pausar
       try { audio.currentTime = 0; } catch (e) {}
       var pp = audio.play(); if (pp && pp.catch) pp.catch(function () {});
@@ -793,6 +884,131 @@
   });
   $('bSeek').addEventListener('input', function () { arrastrando = true; pintarReproductor(); });
   $('bSeek').addEventListener('change', function () { try { audio.currentTime = Number(this.value); } catch (e) {} arrastrando = false; pintarReproductor(); });
+
+  // ---- Toast ----
+  function avisar(txt) { var t = $('toast'); t.textContent = txt; t.classList.add('ver'); clearTimeout(avisar.t); avisar.t = setTimeout(function () { t.classList.remove('ver'); }, 4200); }
+
+  // ---- Jugador y ranking del mes ----
+  var dispositivo = store.get('dispositivo');
+  if (!dispositivo) { dispositivo = ''; for (var di = 0; di < 3; di++) dispositivo += Math.random().toString(36).slice(2, 10); store.set('dispositivo', dispositivo); }
+  var jugador = store.get('jugador'), ultimaRonda = null;
+  function enviar(datos) {
+    if (!RANKING_URL) return;
+    try { fetch(RANKING_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: JSON.stringify(datos) }); } catch (e) {}
+  }
+  function enviarRonda(c, ok, enIntento, p) {
+    enviar({ accion: 'ronda', id: dispositivo, trackId: c.trackId, cancion: limpiarTitulo(c.trackName) + ' – ' + c.artistName, acierto: ok, intento: enIntento, dificultad: nivel || 'facil', puntos: p });
+    clearTimeout(enviarRonda.t); enviarRonda.t = setTimeout(cargarRanking, 2500);
+  }
+  function mesNombre() { return new Date().toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }); }
+  function pintarYo(info) {
+    var y = $('rkYo');
+    if (!jugador) { y.innerHTML = '<button class="btn" type="button" id="rkEntrar">Entrar al ranking</button><span class="dim">Pon tu nombre y tu @ para pelear el premio.</span>'; $('rkEntrar').onclick = abrirForm; return; }
+    y.innerHTML = (info && info.pos ? '<span class="pos">#' + info.pos + '</span><span><b>' + esc(jugador.nombre) + '</b> · ' + Number(info.puntos).toLocaleString('es-CO') + ' pts · ' + info.aciertos + ' aciertos</span>'
+      : '<span>Juegas como <b>' + esc(jugador.nombre) + '</b> (@' + esc(jugador.ig) + ') · tus puntos empiezan a sumar desde ya</span>') + '<button class="link" type="button" id="rkCambiar">Cambiar datos</button>';
+    $('rkCambiar').onclick = abrirForm;
+  }
+  function abrirForm() {
+    $('rkForm').hidden = false; $('rkYo').hidden = true;
+    if (jugador) { $('rkNombre').value = jugador.nombre; $('rkIg').value = '@' + jugador.ig; }
+    $('rkNombre').focus();
+  }
+  function cargarRanking() {
+    $('rkMes').textContent = mesNombre();
+    if (!RANKING_URL) { $('rkLista').innerHTML = '<li><span class="vacio">El ranking arranca muy pronto. Regístrate desde ya y tus próximas partidas van a sumar.</span></li>'; pintarYo(null); return; }
+    fetch(RANKING_URL + '?accion=ranking&id=' + encodeURIComponent(dispositivo)).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok) throw new Error('rk');
+      $('rkLista').innerHTML = d.top.length ? d.top.map(function (f) {
+        return '<li class="' + (f.yo ? 'yo' : '') + '"><span class="n">' + f.pos + '</span><span class="q">' + esc(f.nombre) + '<small>' + esc(f.ig) + '</small></span><span class="p">' + Number(f.puntos).toLocaleString('es-CO') + '</span></li>';
+      }).join('') : '<li><span class="vacio">Nadie ha sumado puntos este mes. ¡Sé el primero!</span></li>';
+      pintarYo(d.yo);
+    }).catch(function () { $('rkLista').innerHTML = '<li><span class="vacio">No pudimos cargar el ranking. Intenta más tarde.</span></li>'; pintarYo(null); });
+  }
+  function iniciarRanking() {
+    $('rkForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var nombre = $('rkNombre').value.trim().slice(0, 24), ig = $('rkIg').value.trim().toLowerCase().replace(/^@+/, '').replace(/[^a-z0-9._]/g, '').slice(0, 30);
+      if (nombre.length < 2) { avisar('Escribe tu nombre'); return $('rkNombre').focus(); }
+      if (ig.length < 2) { avisar('Escribe tu usuario de Instagram'); return $('rkIg').focus(); }
+      jugador = { nombre: nombre, ig: ig }; store.set('jugador', jugador);
+      enviar({ accion: 'registrar', id: dispositivo, nombre: nombre, ig: ig });
+      $('rkForm').hidden = true; $('rkYo').hidden = false; pintarYo(null);
+      avisar('¡Listo, ' + nombre + '! Desde ahora tus puntos suman al ranking.');
+      setTimeout(cargarRanking, 1800);
+    });
+    $('rkCancelar').addEventListener('click', function () { $('rkForm').hidden = true; $('rkYo').hidden = false; });
+    cargarRanking();
+  }
+
+  // ---- Imagen para historias de Instagram (1080 x 1920) ----
+  function cargarImg(src) { return new Promise(function (ok) { var im = new Image(); im.crossOrigin = 'anonymous'; im.onload = function () { ok(im); }; im.onerror = function () { ok(null); }; im.src = src; }); }
+  function ajustar(x, txt, maxW, tam, peso, fam) { var t = tam; do { x.font = peso + ' ' + t + 'px ' + fam; t -= 4; } while (x.measureText(txt).width > maxW && t > 30); }
+  function crearHistoria(r) {
+    var W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var x = cv.getContext('2d'), cs = getComputedStyle(document.documentElement);
+    var tonoB = cs.getPropertyValue('--tono-b').trim() || '#FF9A1F', tonoOsc = cs.getPropertyValue('--tono-osc').trim() || '#1F4FE0';
+    var SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif', IMPACT = 'Impact, Anton, "Arial Black", sans-serif';
+    return cargarImg(img(r.c.artworkUrl100, 600)).then(function (cover) {
+      // fondo
+      x.fillStyle = '#0B0A10'; x.fillRect(0, 0, W, H);
+      var g = x.createRadialGradient(W / 2, 760, 60, W / 2, 760, 900); g.addColorStop(0, tonoB); g.addColorStop(1, 'rgba(11,10,16,0)');
+      x.globalAlpha = .45; x.fillStyle = g; x.fillRect(0, 0, W, H); x.globalAlpha = 1;
+      // título en cinta
+      x.save(); x.translate(W / 2, 250); x.rotate(-.04);
+      x.fillStyle = '#FF9A1F'; x.fillRect(-420, -105, 840, 200);
+      x.fillStyle = '#1A1424'; x.textAlign = 'center'; x.textBaseline = 'middle'; ajustar(x, 'FANGUESS', 700, 190, '400', IMPACT); x.fillText('FANGUESS', 0, 6);
+      x.restore();
+      x.save(); x.translate(W / 2 + 400, 118); x.rotate(.14); x.fillStyle = '#E9DCC2'; x.fillRect(-82, -34, 164, 68); x.fillStyle = '#1A1424'; x.font = '700 46px ' + SANS; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('2016', 0, 3); x.restore();
+      // boleta
+      var bx = 90, by = 430, bw = W - 180, bh = 1150;
+      x.save(); x.translate(W / 2, by + bh / 2); x.rotate(-.025); x.translate(-W / 2, -(by + bh / 2));
+      x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 50; x.shadowOffsetY = 24;
+      x.fillStyle = r.ok ? '#E9DCC2' : '#B3202B'; x.fillRect(bx, by, bw, bh); x.shadowColor = 'transparent';
+      x.fillStyle = '#0B0A10'; x.beginPath(); x.arc(bx, by + 640, 26, 0, 7); x.fill(); x.beginPath(); x.arc(bx + bw, by + 640, 26, 0, 7); x.fill();
+      var tinta = r.ok ? '#17121F' : '#FBEFE0', acento = r.ok ? tonoOsc : '#FFD7A8';
+      // carátula
+      x.save(); x.translate(W / 2, by + 330); x.rotate(.05);
+      x.fillStyle = '#fff'; x.fillRect(-250, -250, 500, 500);
+      if (cover) x.drawImage(cover, -232, -232, 464, 464); else { x.fillStyle = '#222'; x.fillRect(-232, -232, 464, 464); }
+      x.fillStyle = 'rgba(255,154,31,.8)'; x.fillRect(-80, -275, 160, 50);
+      x.restore();
+      // textos
+      x.textAlign = 'center'; x.textBaseline = 'alphabetic'; x.fillStyle = tinta;
+      var titulo = limpiarTitulo(r.c.trackName); ajustar(x, titulo, bw - 120, 84, '800', SANS); x.fillText(titulo, W / 2, by + 700);
+      x.fillStyle = acento; ajustar(x, r.c.artistName, bw - 120, 54, '600', SANS); x.fillText(r.c.artistName, W / 2, by + 770);
+      x.strokeStyle = r.ok ? 'rgba(23,18,31,.3)' : 'rgba(251,239,224,.4)'; x.setLineDash([16, 12]); x.lineWidth = 4; x.beginPath(); x.moveTo(bx + 60, by + 820); x.lineTo(bx + bw - 60, by + 820); x.stroke(); x.setLineDash([]);
+      x.fillStyle = tinta; x.font = '800 54px ' + SANS;
+      x.fillText(r.ok ? (r.intento === 1 ? '¡La adiviné a la primera!' : 'La adiviné en el intento ' + r.intento) : 'Esta se me fue…', W / 2, by + 910);
+      x.fillStyle = acento; x.font = '800 150px ' + SANS; x.fillText('+' + r.p, W / 2, by + 1060);
+      x.fillStyle = tinta; x.font = '700 36px ' + SANS;
+      var extra = 'PUNTOS' + (r.nivel ? ' · ' + NIVELES[r.nivel].txt.toUpperCase() : '') + (seguidas > 1 ? ' · ' + seguidas + ' SEGUIDAS' : '');
+      x.fillText(extra, W / 2, by + 1115);
+      x.restore();
+      // pie con la mención
+      x.textAlign = 'center'; x.fillStyle = '#F3EBDD'; x.font = '800 64px ' + SANS; x.fillText('¿Me ganas?', W / 2, 1700);
+      x.fillStyle = tonoB; x.font = '800 56px ' + SANS; x.fillText('@' + IG_FT, W / 2, 1785);
+      x.fillStyle = 'rgba(243,235,221,.7)'; x.font = '600 36px ' + SANS; x.fillText(LINK_JUEGO, W / 2, 1845);
+      return new Promise(function (ok) { cv.toBlob(function (b) { ok(b); }, 'image/png'); });
+    });
+  }
+  $('compartir').addEventListener('click', function () {
+    if (!ultimaRonda) return;
+    var b = this; b.disabled = true;
+    try { navigator.clipboard.writeText('@' + IG_FT).catch(function () {}); } catch (e) {}
+    crearHistoria(ultimaRonda).then(function (blob) {
+      b.disabled = false; if (!blob) return avisar('No se pudo crear la imagen');
+      var archivo = new File([blob], 'fanguess-' + Date.now() + '.png', { type: 'image/png' });
+      var texto = (ultimaRonda.ok ? '¡Adiviné ' + limpiarTitulo(ultimaRonda.c.trackName) + ' en FanGuess! ' : '¿Tú adivinas esta? ') + '@' + IG_FT + ' · ' + LINK_JUEGO;
+      if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+        avisar('Copiamos @' + IG_FT + ': pégalo como mención en tu historia');
+        navigator.share({ files: [archivo], text: texto }).catch(function () {});
+      } else {
+        var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = archivo.name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+        avisar('Imagen descargada. Súbela a tu historia y menciona a @' + IG_FT);
+      }
+    });
+  });
 
   function limpiarTitulo(t) { return String(t || '').replace(/\s*\[[^\]]*\]/g, '').replace(/\s*\((feat|with|ft)\.?[^)]*\)/gi, '').replace(/\s*-\s*radio edit/i, '').trim(); }
 
@@ -836,6 +1052,7 @@
 
   $('next').addEventListener('click', function () { parar(); if (actual) delete audios[actual.trackId]; siguiente(); });
   $('reset').addEventListener('click', function () { puntos = 0; jugadas = 0; aciertos = 0; seguidas = 0; pintarStats(); });
+  iniciarRanking();
 })();
 </script>
 </body>

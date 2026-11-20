@@ -24,6 +24,7 @@ apps-script/            Google Apps Script (se copian a mano en script.google.co
   Promo-BTC2000.gs        Correo masivo de Back to Classic (máx. 75/día)
   Encuesta-Halloween.gs   Encuesta de satisfacción
   Instagram-Feed.gs       Publicaciones de Instagram para el inicio (renueva el token solo)
+  FanGuess-Ranking.gs     Ranking del mes y estadísticas de FanGuess (Google Sheets)
 guia-fan-tribute.md     Guía de marca, eventos, precios y sistemas
 ```
 
