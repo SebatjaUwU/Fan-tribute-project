@@ -55,6 +55,19 @@
 
   /* juego */
   .game{ border:1px solid var(--rule); background:var(--ink); padding:clamp(18px,3.5vw,34px); margin-bottom:60px; }
+  /* falla: el tablero se daña como pantalla con interferencia */
+  .game{ position:relative; }
+  .game::after{ content:''; position:absolute; inset:0; pointer-events:none; opacity:0;
+    background:repeating-linear-gradient(0deg, rgba(255,79,122,.16) 0 2px, transparent 2px 5px), rgba(255,79,122,.12); mix-blend-mode:screen; }
+  .game.falla{ animation:sacudon .55s steps(1) both; }
+  .game.falla::after{ animation:interferencia .6s steps(1) both; }
+  .game.falla .player, .game.falla .eq{ animation:cortes .55s steps(1) both; }
+  .game.falla .eq i{ background:var(--pink); }
+  .game.falla .round, .game.falla .estado{ text-shadow:3px 0 rgba(255,79,122,.9), -3px 0 rgba(63,214,232,.9); }
+  @keyframes sacudon{ 0%{ transform:translate(0); } 10%{ transform:translate(-9px,2px) skewX(4deg); } 20%{ transform:translate(8px,-3px) skewX(-6deg); } 30%{ transform:translate(-6px,1px); } 40%{ transform:translate(5px,2px) skewX(3deg); } 55%{ transform:translate(-3px,-1px); } 70%{ transform:translate(2px,0); } 100%{ transform:none; } }
+  @keyframes interferencia{ 0%{ opacity:1; } 15%{ opacity:.2; } 25%{ opacity:.9; } 40%{ opacity:0; } 50%{ opacity:.7; } 70%{ opacity:.15; } 100%{ opacity:0; } }
+  @keyframes cortes{ 0%{ clip-path:inset(10% 0 60% 0); transform:translateX(-12px); filter:hue-rotate(90deg) saturate(3); } 15%{ clip-path:inset(55% 0 15% 0); transform:translateX(10px); } 30%{ clip-path:inset(30% 0 40% 0); transform:translateX(-6px); filter:invert(1); } 45%{ clip-path:inset(0 0 80% 0); transform:translateX(8px); filter:none; } 60%{ clip-path:inset(70% 0 0 0); transform:translateX(-4px); } 75%{ clip-path:none; transform:translateX(2px); } 100%{ clip-path:none; transform:none; filter:none; } }
+  @media (prefers-reduced-motion:reduce){ .game.falla, .game.falla::after, .game.falla .player, .game.falla .eq{ animation:none; } }
   .round{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
   .lives{ display:flex; gap:6px; align-items:center; }
   .lives i{ display:block; width:28px; height:28px; color:var(--pink); }
@@ -88,7 +101,7 @@
   .g.bad, .g.ok{ color:var(--cream); }
   .g img{ width:34px; height:34px; object-fit:cover; flex:none; }
   .g .t{ min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .answer{ position:relative; }
+  .answer{ position:relative; margin-top:26px; }
   .answer label{ display:block; color:var(--cream-dim); margin-bottom:6px; }
   .answer input{ width:100%; min-height:56px; border:0; border-bottom:2px solid var(--cream); background:transparent; padding:6px 0 2px; font-size:30px; }
   .answer input::placeholder{ color:rgba(243,235,221,.3); }
@@ -150,16 +163,16 @@
   .result{ display:none; position:relative; padding:24px 10px 64px; overflow:hidden; margin:0 -10px; }
   .b-extra[hidden]{ display:none !important; }
   .result.show{ display:block; }
-  .boleto{ --bc:var(--paper); --tinta:#17121F; --azul:#1F4FE0; position:relative; display:grid; grid-template-columns:minmax(0,1fr) 64px; max-width:620px; margin:0 auto;
+  .boleto{ --bc:var(--paper); --tinta:#17121F; --azul:#1F4FE0; position:relative; display:grid; grid-template-columns:minmax(0,1fr); max-width:600px; margin:0 auto;
     background:var(--bc) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .25 0 0 0 0 .16 0 0 0 .28 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"); color:var(--tinta); box-shadow:0 24px 50px rgba(0,0,0,.55); transform:rotate(-2deg);
     transition:background-color .6s ease, color .6s ease;
     -webkit-mask:radial-gradient(circle 11px at 0 50%, transparent 98%, #000) left/51% 100% no-repeat, radial-gradient(circle 11px at 100% 50%, transparent 98%, #000) right/51% 100% no-repeat;
             mask:radial-gradient(circle 11px at 0 50%, transparent 98%, #000) left/51% 100% no-repeat, radial-gradient(circle 11px at 100% 50%, transparent 98%, #000) right/51% 100% no-repeat; }
-  .b-main{ padding:26px 24px 26px 30px; border-right:2px dashed rgba(23,18,31,.35); min-width:0; }
+  .b-main{ padding:26px 30px 26px 30px; min-width:0; }
   .b-kick{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--azul); padding-right:96px; }
-  .b-title{ margin-top:10px; font-size:clamp(40px, 7vw, 60px); line-height:.88; padding-right:96px; overflow-wrap:anywhere; }
+  .b-title{ margin-top:4px; font-size:clamp(40px, 7vw, 60px); line-height:.88; padding-right:96px; overflow-wrap:anywhere; }
   .b-artist{ margin-top:6px; font-family:'Caveat Brush',cursive; font-size:clamp(26px, 4.5vw, 34px); line-height:1; color:var(--azul); }
-  .b-cover{ position:absolute; top:22px; right:82px; width:84px; height:84px; background:#000 center/cover no-repeat; transform:rotate(5deg); box-shadow:0 6px 14px rgba(0,0,0,.35); border:4px solid #fff; }
+  .b-cover{ position:absolute; top:22px; right:26px; width:84px; height:84px; background:#000 center/cover no-repeat; transform:rotate(5deg); box-shadow:0 6px 14px rgba(0,0,0,.35); border:4px solid #fff; }
   .b-cover::before{ content:''; position:absolute; top:-12px; left:50%; width:46px; height:18px; margin-left:-23px; background:rgba(255,154,31,.75); transform:rotate(-4deg); }
   .b-hr{ border:0; border-top:2px dashed rgba(23,18,31,.3); margin:18px 0 14px; }
   .b-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:14px; }
@@ -191,7 +204,7 @@
   .b-side{ display:flex; justify-content:center; padding:24px 0 96px; }
   .b-side span{ writing-mode:vertical-rl; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; letter-spacing:.3em; text-transform:uppercase; }
   .b-barcode{ position:absolute; right:12px; bottom:20px; width:40px; height:64px; background:repeating-linear-gradient(90deg, currentColor 0 2px, transparent 2px 4px, currentColor 4px 5px, transparent 5px 8px); opacity:.75; }
-  .sello{ position:absolute; right:54px; top:92px; padding:6px 12px 3px; border:3px solid currentColor; font-size:30px; white-space:nowrap; z-index:2; line-height:1; letter-spacing:.04em; color:var(--azul); opacity:0; transform:rotate(-14deg) scale(2.4); pointer-events:none; mix-blend-mode:multiply; }
+  .sello{ position:absolute; right:10px; top:100px; padding:6px 12px 3px; border:3px solid currentColor; font-size:30px; white-space:nowrap; z-index:2; line-height:1; letter-spacing:.04em; color:var(--azul); opacity:0; transform:rotate(-14deg) scale(2.4); pointer-events:none; mix-blend-mode:multiply; }
   /* acertó: la boleta cae, rebota y le ponen el sello */
   .boleto.gana{ animation:imprimir .7s cubic-bezier(.2,1.5,.4,1) both; }
   .boleto.gana .sello{ animation:sellar .45s cubic-bezier(.3,1.6,.5,1) .55s forwards; }
@@ -209,20 +222,19 @@
   .papelito{ position:absolute; top:0; width:9px; height:14px; pointer-events:none; z-index:3; }
   .gota{ position:absolute; width:8px; height:12px; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%; background:#FF6B6B; opacity:0; pointer-events:none; z-index:3; }
   @media (max-width:560px){
-    .boleto{ grid-template-columns:minmax(0,1fr) 42px; transform:rotate(-1deg); }
+    .boleto{ grid-template-columns:minmax(0,1fr); transform:rotate(-1deg); }
     .b-main{ padding:22px 16px 22px 22px; }
-    .b-cover{ width:64px; height:64px; right:56px; top:18px; }
-    .b-kick, .b-title{ padding-right:70px; }
-    .b-side{ padding-bottom:84px; } .b-barcode{ right:6px; width:28px; }
+    .b-cover{ width:64px; height:64px; right:16px; top:18px; }
+    .b-title{ padding-right:70px; }
     .boleto{ width:92%; }
-    .sello{ right:34px; top:72px; font-size:22px; padding:4px 8px 2px; }
+    .sello{ right:6px; top:76px; font-size:22px; padding:4px 8px 2px; }
     .b-player{ flex-wrap:wrap; gap:8px 12px; }
     #bSeek{ order:3; flex-basis:100%; }
     .b-hr{ margin:14px 0 12px; }
     .b-facts{ margin-top:10px; }
     .b-name{ font-size:28px; }
     .b-pts{ font-size:42px; }
-    .b-kick{ letter-spacing:.1em; }
+
   }
   @media (prefers-reduced-motion:reduce){ .sello{ opacity:.9 !important; transform:rotate(-14deg) !important; } }
   .state{ padding:40px 0; color:var(--cream-dim); font-size:22px; }
@@ -273,7 +285,6 @@
       <p class="estado" id="estado" aria-live="polite"></p>
       <div class="eq idle" id="wave" aria-hidden="true"></div>
 
-      <div class="guesses" id="guesses"></div>
 
       <div class="answer">
         <label for="ans" class="mono">Tu respuesta</label>
@@ -290,7 +301,6 @@
     <div class="result" id="result" aria-live="polite">
       <div class="boleto" id="boleto">
         <div class="b-main">
-          <div class="b-kick">FanGuess · <span id="fAnio">–</span> · <span id="fGen">–</span></div>
           <div class="b-title" id="rTitle"></div>
           <div class="b-artist" id="rArtist"></div>
           <hr class="b-hr">
@@ -307,16 +317,14 @@
             <input type="range" id="bSeek" min="0" max="30" step="0.1" value="0" aria-label="Mover la canción">
             <span class="b-time" id="bTime">0:00 / 0:30</span>
           </div>
-          <div class="b-facts"><span><b class="bpm" id="fBpm">–</b>BPM aprox.</span><span><b id="fDur">–</b>duración</span></div>
+          <div class="b-facts"><span><b class="bpm" id="fBpm">–</b>BPM aprox.</span><span><b id="fDur">–</b>duración</span><span><b id="fAnio">–</b>año</span></div>
           <hr class="b-hr">
           <div class="b-btns">
             <button class="btn" id="next">Siguiente canción</button>
             <button class="link" id="reset">Reiniciar puntos</button>
           </div>
         </div>
-        <div class="b-side"><span>Admit one · FanGuess</span></div>
         <div class="b-cover" id="rCover" role="img" aria-label="Carátula"></div>
-        <div class="b-barcode" aria-hidden="true"></div>
         <div class="sello" id="sello" aria-hidden="true">Le pegaste</div>
       </div>
     </div>
@@ -425,7 +433,6 @@ function pintarOnda(el, n) {
   var wave = $('wave'); pintarOnda(wave, 72);
   var CORAZON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="h-l" d="M12 6.5C10.5 4 7.9 3 5.6 3.6 2.8 4.4 1.5 7.5 2.6 10.3 3.9 13.6 8 17.3 12 21L10.6 16.5 12.8 13 10.8 9.5Z"/><path class="h-r" d="M12 6.5C13.5 4 16.1 3 18.4 3.6 21.2 4.4 22.5 7.5 21.4 10.3 20.1 13.6 16 17.3 12 21L10.6 16.5 12.8 13 10.8 9.5Z"/></svg>';
   document.querySelectorAll('.lives i').forEach(function (i) { i.innerHTML = CORAZON; });
-  $('guesses').innerHTML = '<div class="g"><span class="tag mono">Intento 1</span></div><div class="g"><span class="tag mono">Intento 2</span></div><div class="g"><span class="tag mono">Intento 3</span></div>';
 
   // ---- Canciones al azar, sin repetir hasta que salgan todas ----
   function sacarIds(n) {
@@ -500,7 +507,6 @@ function pintarOnda(el, n) {
       audio.src = blobActual; audio.load();
     }).catch(function () { if (actual === t && !listo) estado('No se pudo descargar · dale play para intentar', 'err'); $('play').classList.remove('wait'); });
     document.querySelectorAll('.lives i').forEach(function (i) { i.classList.remove('lost'); });
-    $('guesses').innerHTML = '<div class="g"><span class="tag mono">Intento 1</span></div><div class="g"><span class="tag mono">Intento 2</span></div><div class="g"><span class="tag mono">Intento 3</span></div>';
     $('unlocked').style.width = (CORTES[0] / TOTAL * 100) + '%';
     ['t2', 't3'].forEach(function (t) { $(t).classList.remove('on'); });
     $('ans').value = ''; $('send').disabled = true; elegida = null;
@@ -567,26 +573,30 @@ function pintarOnda(el, n) {
   });
   $('ans').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); if (!$('send').disabled) $('send').click(); } });
 
-  function filaIntento(clase, html) { var g = $('guesses').children[intento]; g.className = 'g ' + clase; g.innerHTML = '<span class="tag mono">' + ({ ok: 'Acierto', bad: 'Fallo', skip: 'Saltada' })[clase] + '</span>' + html; }
+  var ultimoFallo = '';
+  function filaIntento(clase, txt) { ultimoFallo = clase === 'bad' ? 'No era ' + txt + ' · ' : clase === 'skip' ? 'Perdiste un intento · ' : ''; }
 
   $('send').addEventListener('click', function () {
     if (terminado || !elegida) return;
     var c = actual;
     var ok = elegida.trackId === c.trackId || (norm(elegida.trackName) === norm(c.trackName) && norm(elegida.artistName).indexOf(norm(c.artistName).split(' ')[0]) > -1);
-    var html = '<img src="' + img(elegida.artworkUrl100, 60) + '" alt=""><span class="t">' + esc(elegida.trackName) + ' – ' + esc(elegida.artistName) + '</span>';
+    var html = esc(limpiarTitulo(elegida.trackName)) + ' – ' + esc(elegida.artistName);
     $('ans').value = ''; $('send').disabled = true; $('sugg').classList.remove('open');
     if (ok) { filaIntento('ok', html); return finRonda(true); }
     filaIntento('bad', html); fallo();
   });
-  $('skip').addEventListener('click', function () { if (terminado) return; filaIntento('skip', '<span class="t">Perdiste un intento para oír más</span>'); fallo(); });
+  $('skip').addEventListener('click', function () { if (terminado) return; filaIntento('skip', ''); fallo(); });
 
   function fallo() {
+    var j = $('jugar'); j.classList.remove('falla'); void j.offsetWidth; j.classList.add('falla');
+    clearTimeout(fallo.t); fallo.t = setTimeout(function () { j.classList.remove('falla'); }, 700);
+    if (navigator.vibrate) try { navigator.vibrate([60, 40, 60]); } catch (e) {}
     document.querySelectorAll('.lives i')[intento].classList.add('lost');
     intento++;
     if (intento >= 3) return finRonda(false);
     $('unlocked').style.width = (CORTES[intento] / TOTAL * 100) + '%';
     $('t' + (intento + 1)).classList.add('on');
-    estado('Se desbloquearon ' + CORTES[intento] + ' segundos · dale play otra vez', 'ok');
+    estado(ultimoFallo + 'se desbloquearon ' + CORTES[intento] + ' segundos · dale play otra vez', 'err');
   }
 
   function minSeg(ms) { if (!ms) return '–'; var s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
@@ -608,8 +618,6 @@ function pintarOnda(el, n) {
       $('rAlbum').textContent = c.collectionName || '';
       $('fAnio').textContent = String(c.releaseDate || '').slice(0, 4) || '–';
       $('fDur').textContent = minSeg(c.trackTimeMillis);
-      $('fGen').textContent = c.primaryGenreName || '–';
-      $('fGen').title = c.primaryGenreName || '';
       $('fBpm').innerHTML = '<span class="puntos" style="font-size:16px" title="Calculando el BPM"><i></i><i></i><i></i></span>';
       bpmDe(c).then(function (b) { if (actual === c) $('fBpm').textContent = b || '–'; });
       $('result').classList.add('show');
