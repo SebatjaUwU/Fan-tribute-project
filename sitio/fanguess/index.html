@@ -95,6 +95,8 @@
   .sugg .t b{ display:block; font-size:21px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .sugg .t small{ display:block; font-size:15px; color:var(--cream-dim); letter-spacing:.08em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .row-btns{ display:flex; align-items:center; gap:24px; margin-top:26px; flex-wrap:wrap; }
+  .play.wait{ animation:esperar 1s ease-in-out infinite; }
+  @keyframes esperar{ 50%{ opacity:.55; } }
   .btn{ display:inline-block; padding:15px 22px 12px; background:var(--cream); color:var(--black); text-decoration:none; font-size:24px; letter-spacing:.06em; line-height:1; border:0; cursor:pointer; box-shadow:6px 6px 0 var(--violet); transition:transform .2s ease, box-shadow .2s ease; }
   .btn:hover{ transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--orange); }
   .btn:disabled{ opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
@@ -255,8 +257,8 @@ function pintarOnda(el, n) {
   }
 
   // ---- BPM aproximado: se calcula con el fragmento de 30 s (graves -> golpes -> autocorrelación) ----
-  function calcularBpm(url) {
-    return fetch(url).then(function (r) { return r.arrayBuffer(); }).then(function (buf) {
+  function calcularBpm(buf0) {
+    return Promise.resolve(buf0.slice(0)).then(function (buf) {
       var AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
       var tmp = new AC(1, 2, 44100);
       return new Promise(function (ok, fail) { tmp.decodeAudioData(buf, ok, fail); });
@@ -302,9 +304,9 @@ function pintarOnda(el, n) {
                 set: function (k, v) { try { localStorage.setItem('fg_' + k, JSON.stringify(v)); } catch (e) {} } };
 
   // ---- Estado ----
-  var cola = [], bolsa = [], actual = null, intento = 0, terminado = false, audio = new Audio(), corte = null, bpms = {};
+  var cola = [], bolsa = [], actual = null, intento = 0, terminado = false, audio = new Audio(), bpms = {};
   var puntos = 0, jugadas = 0, aciertos = 0, seguidas = 0, record = store.get('record') || 0;
-  audio.preload = 'auto';
+  audio.preload = 'auto'; audio.setAttribute('playsinline', '');
   var wave = $('wave'); pintarOnda(wave, 72);
   $('guesses').innerHTML = '<div class="g"><span class="tag mono">Intento 1</span></div><div class="g"><span class="tag mono">Intento 2</span></div><div class="g"><span class="tag mono">Intento 3</span></div>';
 
@@ -330,9 +332,15 @@ function pintarOnda(el, n) {
     }, function (e) { cargandoMas = null; throw e; });
     return cargandoMas;
   }
+  // El fragmento se descarga una sola vez: sirve para sonar sin cortes en el celular y para el BPM
+  var audios = {}, blobActual = null;
+  function descargar(t) {
+    if (!audios[t.trackId]) audios[t.trackId] = fetch(t.previewUrl).then(function (r) { if (!r.ok) throw new Error('audio'); return r.arrayBuffer(); });
+    return audios[t.trackId];
+  }
   function bpmDe(t) {
     if (BPM_FIJO[t.trackId]) return Promise.resolve(BPM_FIJO[t.trackId]);
-    if (!bpms[t.trackId]) bpms[t.trackId] = calcularBpm(t.previewUrl).catch(function () { return null; });
+    if (!bpms[t.trackId]) bpms[t.trackId] = descargar(t).then(calcularBpm).catch(function () { return null; });
     return bpms[t.trackId];
   }
   function siguiente() {
@@ -343,7 +351,7 @@ function pintarOnda(el, n) {
       $('cargando').hidden = true;
       iniciarRonda();
       bpmDe(actual);
-      rellenar().catch(function () {});
+      rellenar().then(function () { if (cola[0]) descargar(cola[0]).catch(function () {}); }).catch(function () {});
     }).catch(function (e) {
       $('cargando').innerHTML = 'No pudimos cargar las canciones. Revisa tu conexión y vuelve a intentar.<br><small style="opacity:.5">(' + (e && e.message) + ')</small><br><br><button class="btn" id="retry">Reintentar</button>';
       $('retry').addEventListener('click', siguiente);
@@ -359,7 +367,14 @@ function pintarOnda(el, n) {
 
   function iniciarRonda() {
     intento = 0; terminado = false;
-    audio.src = actual.previewUrl;
+    var t = actual;
+    audio.src = t.previewUrl; audio.load();
+    descargar(t).then(function (buf) {
+      if (actual !== t || !audio.paused) return;
+      if (blobActual) URL.revokeObjectURL(blobActual);
+      blobActual = URL.createObjectURL(new Blob([buf], { type: 'audio/mp4' }));
+      audio.src = blobActual; audio.load();
+    }).catch(function () {});
     document.querySelectorAll('.lives i').forEach(function (i) { i.classList.remove('lost'); });
     $('guesses').innerHTML = '<div class="g"><span class="tag mono">Intento 1</span></div><div class="g"><span class="tag mono">Intento 2</span></div><div class="g"><span class="tag mono">Intento 3</span></div>';
     $('unlocked').style.width = (CORTES[0] / TOTAL * 100) + '%';
@@ -370,18 +385,26 @@ function pintarOnda(el, n) {
   }
 
   // ---- Reproducir el fragmento ----
+  // El corte se mide con el tiempo real del audio (no con un reloj): si el celular tarda en cargar,
+  // igual suena el segundo completo.
+  var turno = 0;
+  function parar() {
+    turno++; audio.pause(); wave.classList.add('idle'); $('play').disabled = false; $('play').classList.remove('wait');
+    setTimeout(function () { $('progress').style.width = 0; }, 400);
+  }
   $('play').addEventListener('click', function () {
-    var seg = CORTES[Math.min(intento, 2)];
-    clearTimeout(corte); audio.currentTime = 0;
-    var p = audio.play(); if (p && p.catch) p.catch(function () {});
-    wave.classList.remove('idle'); $('play').disabled = true;
-    var t0 = performance.now();
-    (function paso(t) {
-      var k = Math.min(1, (t - t0) / (seg * 1000));
-      $('progress').style.width = (k * seg / TOTAL * 100) + '%';
-      if (k < 1) requestAnimationFrame(paso);
-    })(t0);
-    corte = setTimeout(function () { audio.pause(); wave.classList.add('idle'); $('play').disabled = false; setTimeout(function () { $('progress').style.width = 0; }, 400); }, seg * 1000);
+    var seg = CORTES[Math.min(intento, 2)], mio = ++turno, limite = performance.now() + 15000;
+    $('play').disabled = true; $('play').classList.add('wait'); $('progress').style.width = 0;
+    try { audio.currentTime = 0; } catch (e) {}
+    var p = audio.play(); if (p && p.catch) p.catch(function () { if (mio === turno) parar(); });
+    (function paso() {
+      if (mio !== turno) return;
+      var ct = audio.currentTime || 0;
+      if (ct > 0 && !audio.paused) { wave.classList.remove('idle'); $('play').classList.remove('wait'); }
+      $('progress').style.width = (Math.min(ct, seg) / TOTAL * 100) + '%';
+      if (ct >= seg || audio.ended || (ct === 0 && performance.now() > limite)) return parar();
+      requestAnimationFrame(paso);
+    })();
   });
 
   // ---- Buscador con carátulas (busca en todo el catálogo para no delatar la respuesta) ----
@@ -430,7 +453,7 @@ function pintarOnda(el, n) {
 
   function minSeg(ms) { if (!ms) return '–'; var s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
   function finRonda(ok) {
-    terminado = true; audio.pause(); clearTimeout(corte); wave.classList.add('idle');
+    terminado = true; parar();
     var c = actual, p = ok ? PUNTOS[intento] : 0;
     puntos += p; jugadas++; if (ok) { aciertos++; seguidas++; } else seguidas = 0;
     if (puntos > record) { record = puntos; store.set('record', record); }
@@ -454,7 +477,7 @@ function pintarOnda(el, n) {
     }, 500);
   }
 
-  $('next').addEventListener('click', function () { audio.pause(); siguiente(); });
+  $('next').addEventListener('click', function () { parar(); if (actual) delete audios[actual.trackId]; siguiente(); });
   $('reset').addEventListener('click', function () { puntos = 0; jugadas = 0; aciertos = 0; seguidas = 0; pintarStats(); });
 })();
 </script>
