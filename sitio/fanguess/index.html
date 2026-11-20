@@ -283,12 +283,14 @@
   .pista p{ font-size:15px; margin-top:2px; }
   .pista b{ color:var(--cream); }
   /* compartir */
-  .compartir{ display:flex; align-items:center; justify-content:center; gap:10px; width:100%; margin-top:14px; padding:13px 16px; border:0; border-radius:14px; cursor:pointer; color:#fff; font-size:16px; font-weight:700;
-    background:linear-gradient(45deg, #F9CE34, #EE2A7B 45%, #6228D7); box-shadow:0 8px 18px rgba(238,42,123,.3); transition:transform .15s; }
-  .compartir:hover{ transform:translateY(-2px); } .compartir:active{ transform:scale(.98); }
-  .compartir svg{ width:22px; height:22px; }
+  /* botón con el logo de Instagram (cuadro con degradado) */
+  .compartir{ flex:none; display:grid; place-items:center; width:54px; height:54px; padding:0; border:0; border-radius:15px; cursor:pointer;
+    background:radial-gradient(circle at 30% 107%, #FDF497 0%, #FDF497 5%, #FD5949 45%, #D6249F 60%, #285AEB 90%); box-shadow:0 6px 14px rgba(214,36,159,.35); transition:transform .15s; }
+  .compartir:hover{ transform:translateY(-2px) rotate(-4deg); }
+  .compartir:active{ transform:scale(.94); }
+  .compartir svg{ width:34px; height:34px; }
   .compartir[disabled]{ opacity:.6; cursor:wait; }
-  .b-mencion{ margin:8px 0 14px; text-align:center; font-size:13.5px; color:#3B3346; }
+  .b-mencion{ margin:12px 0 0; font-size:12.5px; color:#3B3346; }
   .boleto.pierde .b-mencion{ color:rgba(251,239,224,.8); }
   /* ranking */
   .ranking{ border:1px solid var(--rule); background:var(--ink); padding:clamp(18px,3.5vw,30px); margin:-30px 0 60px; }
@@ -400,12 +402,12 @@
           <div class="b-facts"><span><b class="bpm" id="fBpm">–</b>BPM aprox.</span><span><b id="fDur">–</b>duración</span><span><b id="fAnio">–</b>año</span></div>
           <hr class="b-hr">
           <p class="teclas b-teclas"><kbd>Espacio</kbd> pausa · <kbd>←</kbd> <kbd>→</kbd> mover 5 s · <kbd>Enter</kbd> siguiente</p>
-          <button class="compartir" id="compartir" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>Compartir en tu historia</button>
-          <p class="b-mencion">Menciona a <b>@fantribute_col</b> en tu historia y te compartimos</p>
           <div class="b-btns">
             <button class="btn" id="next">Siguiente canción</button>
+            <button class="compartir" id="compartir" type="button" aria-label="Compartir en tu historia de Instagram" title="Compartir en tu historia"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.6"/><circle cx="12" cy="12" r="3.8"/><circle cx="16.9" cy="7.1" r="1.1" fill="#fff" stroke="none"/></svg></button>
             <button class="link" id="reset">Reiniciar puntos</button>
           </div>
+          <p class="b-mencion">Al compartir, menciona a <b>@fantribute_col</b></p>
         </div>
         <div class="b-cover" id="rCover" role="img" aria-label="Carátula"></div>
         <div class="sello" id="sello" aria-hidden="true">Le pegaste</div>
