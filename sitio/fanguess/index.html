@@ -289,6 +289,7 @@
   .compartir:hover{ transform:translateY(-2px) rotate(-4deg); }
   .compartir:active{ transform:scale(.94); }
   .compartir svg{ width:34px; height:34px; }
+  .compartir[hidden], .b-mencion[hidden]{ display:none; }
   .compartir[disabled]{ opacity:.6; cursor:wait; }
   .b-ig{ margin:16px 0 4px; padding:14px; border:2px dashed currentColor; color:var(--tinta); animation:in .5s ease .9s both; }
   .b-ig[hidden]{ display:none; }
@@ -416,9 +417,9 @@
           <div class="b-btns">
             <button class="btn" id="next">Siguiente canción</button>
             <button class="compartir" id="compartir" type="button" aria-label="Compartir en tu historia de Instagram" title="Compartir en tu historia"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4.6"/><circle cx="12" cy="12" r="3.8"/><circle cx="16.9" cy="7.1" r="1.1" fill="#fff" stroke="none"/></svg></button>
-            <button class="link" id="reset">Reiniciar puntos</button>
+            <button class="link" id="reset">Reiniciar partida</button>
           </div>
-          <p class="b-mencion">Al compartir, menciona a <b>@fantribute_col</b></p>
+          <p class="b-mencion" id="bMencion">Comparte tu racha y menciona a <b>@fantribute_col</b></p>
         </div>
         <div class="b-cover" id="rCover" role="img" aria-label="Carátula"></div>
         <div class="sello" id="sello" aria-hidden="true">Le pegaste</div>
@@ -862,6 +863,8 @@
       animarBoleta(ok, p);
       ultimaRonda = { c: c, ok: ok, p: p, intento: enIntento, nivel: nivel, racha: ok ? seguidas : rachaAntes };
       if (ok) { anotarRacha(seguidas); $('bIg').hidden = true; } else pedirIg(rachaAntes);
+      $('compartir').hidden = ok; $('bMencion').hidden = ok;
+      ultimaRonda.total = puntos;
       enviarRonda(c, ok, enIntento, p);
       // al terminar suena la canción y se puede mover o pausar
       try { audio.currentTime = 0; } catch (e) {}
@@ -999,10 +1002,11 @@
       x.fillStyle = acento; ajustar(x, r.c.artistName, bw - 120, 54, '600', SANS); x.fillText(r.c.artistName, W / 2, by + 770);
       x.strokeStyle = r.ok ? 'rgba(23,18,31,.3)' : 'rgba(251,239,224,.4)'; x.setLineDash([16, 12]); x.lineWidth = 4; x.beginPath(); x.moveTo(bx + 60, by + 820); x.lineTo(bx + bw - 60, by + 820); x.stroke(); x.setLineDash([]);
       x.fillStyle = tinta; x.font = '800 54px ' + SANS;
-      x.fillText(r.ok ? (r.intento === 1 ? '¡La adiviné a la primera!' : 'La adiviné en el intento ' + r.intento) : 'Esta se me fue…', W / 2, by + 910);
-      x.fillStyle = acento; x.font = '800 150px ' + SANS; x.fillText('+' + r.p, W / 2, by + 1060);
+      var fin = !r.ok && r.racha > 0;
+      x.fillText(r.ok ? (r.intento === 1 ? '¡La adiviné a la primera!' : 'La adiviné en el intento ' + r.intento) : fin ? 'Mi racha en FanGuess' : 'Esta se me fue…', W / 2, by + 910);
+      x.fillStyle = acento; x.font = '800 150px ' + SANS; x.fillText(fin ? String(r.racha) : '+' + r.p, W / 2, by + 1060);
       x.fillStyle = tinta; x.font = '700 36px ' + SANS;
-      var extra = 'PUNTOS' + (r.nivel ? ' · ' + NIVELES[r.nivel].txt.toUpperCase() : '') + (r.racha > 1 ? ' · ' + r.racha + ' SEGUIDAS' : '');
+      var extra = fin ? (r.racha === 1 ? 'CANCIÓN SEGUIDA' : 'CANCIONES SEGUIDAS') + ' · ' + Number(r.total || 0).toLocaleString('es-CO') + ' PUNTOS' : 'PUNTOS' + (r.nivel ? ' · ' + NIVELES[r.nivel].txt.toUpperCase() : '') + (r.racha > 1 ? ' · ' + r.racha + ' SEGUIDAS' : '');
       x.fillText(extra, W / 2, by + 1115);
       x.restore();
       // pie con la mención
@@ -1072,7 +1076,7 @@
   }
 
   $('next').addEventListener('click', function () { parar(); if (actual) delete audios[actual.trackId]; siguiente(); });
-  $('reset').addEventListener('click', function () { puntos = 0; jugadas = 0; aciertos = 0; seguidas = 0; pintarStats(); });
+  $('reset').addEventListener('click', function () { puntos = 0; jugadas = 0; aciertos = 0; seguidas = 0; pintarStats(); parar(); if (actual) delete audios[actual.trackId]; siguiente(); avisar('Partida nueva: empiezas de cero'); });
   iniciarRanking();
 })();
 </script>
