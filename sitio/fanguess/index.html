@@ -273,6 +273,17 @@
   /* pesos de la fuente */
   .b-title, .stat b, .b-pts, .b-name, .tape, .tag-anio, .sello, .btn{ font-weight:700; }
   .estado:empty{ display:none; }
+  /* botón Responder: grande, redondeado y con sombra del color de la canción */
+  .responder{ display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:60px; padding:0 24px; border:0; border-radius:16px; cursor:pointer;
+    background:linear-gradient(135deg, var(--tono-a), var(--tono-b) 55%, var(--tono-c)); color:#17121F; font-size:19px; font-weight:800; letter-spacing:.01em;
+    box-shadow:0 10px 24px color-mix(in srgb, var(--tono-b) 45%, transparent), inset 0 1px 0 rgba(255,255,255,.45); transition:transform .15s ease, box-shadow .2s ease, filter .2s; }
+  .responder svg{ width:22px; height:22px; transition:transform .2s ease; }
+  .responder:hover:not(:disabled){ transform:translateY(-2px); box-shadow:0 14px 30px color-mix(in srgb, var(--tono-b) 55%, transparent), inset 0 1px 0 rgba(255,255,255,.45); }
+  .responder:hover:not(:disabled) svg{ transform:translateX(4px); }
+  .responder:active:not(:disabled){ transform:translateY(1px) scale(.99); box-shadow:0 4px 12px color-mix(in srgb, var(--tono-b) 40%, transparent); }
+  .responder:disabled{ cursor:not-allowed; background:rgba(243,235,221,.07); color:rgba(243,235,221,.4); box-shadow:inset 0 0 0 1.5px rgba(243,235,221,.14); }
+  .responder:not(:disabled){ animation:listo .5s cubic-bezier(.3,1.5,.5,1); }
+  @keyframes listo{ 0%{ transform:scale(.96); } 60%{ transform:scale(1.02); } 100%{ transform:none; } }
   /* pistas */
   .pista{ display:flex; align-items:center; gap:14px; margin-top:14px; padding:10px 12px; border:1px dashed var(--rule); animation:in .4s ease both; }
   .pista[hidden]{ display:none; }
@@ -382,10 +393,9 @@
         <input id="ans" aria-label="Tu respuesta" autocomplete="off" placeholder="Canción o artista">
       </div>
       <div class="row-btns">
-        <button class="btn" id="send" disabled>Responder</button>
-        <button class="link" id="skip">Pierdes un intento</button>
+        <button class="responder" id="send" disabled><span>Responder</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
       </div>
-      <p class="hint">Elige una canción de la lista que aparece al escribir. <span class="teclas">Teclado: <kbd>Espacio</kbd> reproduce o pausa · <kbd>/</kbd> escribir · <kbd>Esc</kbd> salir</span></p>
+      <p class="hint">Escribe y elige la canción de la lista. Si fallas, se rompe un corazón y escuchas más. <span class="teclas">Teclado: <kbd>Espacio</kbd> reproduce o pausa · <kbd>/</kbd> escribir · <kbd>Esc</kbd> salir</span></p>
     </div>
 
     <div class="result" id="result" aria-live="polite">
@@ -739,7 +749,7 @@
     turno++; audio.pause(); $('play').disabled = false; $('play').classList.remove('wait'); iconoPlay(false);
     pausado = manual === true && !terminado;
     if (pausado) { pintarBarras(audio.currentTime || 0); estado('En pausa · dale play o la barra espaciadora para seguir', 'ok'); return; }
-    if (!terminado) estado(intento < 2 ? 'Escribe tu respuesta o pierde un intento para oír más' : 'Última vida · escribe tu respuesta', 'ok');
+    if (!terminado) estado(intento < 2 ? 'Escribe tu respuesta · si fallas escuchas más' : 'Última vida · escribe tu respuesta', 'ok');
     setTimeout(function () { if (!pausado && $('play').classList.contains('sonando') === false) pintarBarras(0); }, 500);
   }
   $('play').addEventListener('click', function () {
@@ -806,7 +816,7 @@
   $('ans').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); if (!$('send').disabled) $('send').click(); } });
 
   var ultimoFallo = '';
-  function filaIntento(clase, txt) { ultimoFallo = clase === 'bad' ? 'No era ' + txt + ' · ' : clase === 'skip' ? 'Perdiste un intento · ' : ''; }
+  function filaIntento(clase, txt) { ultimoFallo = clase === 'bad' ? 'No era ' + txt + ' · ' : ''; }
 
   $('send').addEventListener('click', function () {
     if (terminado || !elegida) return;
@@ -817,7 +827,6 @@
     if (ok) { filaIntento('ok', html); return finRonda(true); }
     filaIntento('bad', html); fallo();
   });
-  $('skip').addEventListener('click', function () { if (terminado) return; filaIntento('skip', ''); fallo(); });
 
   function fallo() {
     var j = $('jugar'); j.classList.remove('falla'); void j.offsetWidth; j.classList.add('falla');
