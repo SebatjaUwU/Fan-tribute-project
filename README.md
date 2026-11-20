@@ -16,7 +16,7 @@ sitio/                  El sitio que se publica (Netlify). Todo lo que va en viv
   eventos-hub/          Páginas de eventos, merch y herramientas de QR del staff
     eventos/            medellin-2016, back-to-classic-2000, last-summer-2016, boletas, confirmaciones...
     herramientas-qr/    Generadores de boletas para ventas manuales
-  fanguess/             Versión de prueba del juego FanGuess
+  fanguess/             Juego FanGuess (modo libre, 56 clásicos EDM, BPM)
   sitemap.xml, robots.txt, llms.txt
 maqueta-inicio-nuevo/   Maqueta original del inicio nuevo (referencia de diseño)
 apps-script/            Google Apps Script (se copian a mano en script.google.com)
