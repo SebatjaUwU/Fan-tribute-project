@@ -1,32 +1,38 @@
 /**
- * FanGuess · Ranking del mes y estadísticas
- * ------------------------------------------------------------
+ * FanGuess · Ranking del mes (por racha de aciertos seguidos) y estadísticas
+ * --------------------------------------------------------------------------
  * Backend gratis con Google Sheets. No lleva llaves ni contraseñas.
  *
  * Cómo instalarlo (una sola vez):
  *   1. Crea una hoja de cálculo nueva en Google Drive llamada "FanGuess".
  *   2. Menú Extensiones → Apps Script. Borra lo que haya y pega este archivo.
- *   3. Guarda y ejecuta la función "prepararHoja" (te pedirá permisos: acéptalos).
+ *   3. Guarda, elige la función "prepararHoja" y dale Ejecutar (acepta los permisos).
  *   4. Implementar → Nueva implementación → tipo "Aplicación web".
  *        Ejecutar como: Yo   ·   Quién tiene acceso: Cualquier persona
  *   5. Copia la URL que termina en /exec y pégala en fanguess/index.html,
  *      en la línea  var RANKING_URL = '';
  *
- * Hojas que crea:
- *   Jugadores · Rondas · Ranking (se actualiza solo) · Canciones (estadísticas)
+ * Cómo funciona:
+ *   - Cada canción que se juega llega aquí. El servidor lleva la racha de cada celular
+ *     (no se fía de lo que diga la página), así nadie puede inventarse una racha.
+ *   - Cuando a alguien se le acaba la racha, la página le pide su @ de Instagram.
+ *     Si ese @ ya está en el ranking del mes, se actualiza (queda la mejor racha).
+ *   - Ranking: mejor racha del mes; si empatan, gana quien tenga más aciertos.
+ *
+ * Hojas: Jugadores · Rondas · Ranking · Canciones (estadísticas)
  */
 
 var ZONA = 'America/Bogota';
 var PUNTOS = [300, 200, 100];
 var MULT = { facil: 1, medio: 1.5, dificil: 2 };
-var MIN_SEG_ENTRE_RONDAS = 4;      // nadie adivina y pasa de canción en menos de 4 s
-var MAX_RONDAS_DIA = 400;          // tope por jugador por día
+var MIN_SEG_ENTRE_RONDAS = 4;      // nadie escucha, adivina y pasa de canción en menos de 4 s
+var MAX_RONDAS_DIA = 400;          // tope por celular por día
 
 function prepararHoja() {
   var ss = SpreadsheetApp.getActive();
-  hoja_(ss, 'Jugadores', ['id', 'nombre', 'instagram', 'creado', 'ultima vez']);
-  hoja_(ss, 'Rondas', ['fecha', 'mes', 'jugador', 'trackId', 'canción', 'acertó', 'intento', 'dificultad', 'puntos', 'válida']);
-  hoja_(ss, 'Ranking', ['mes', 'jugador', 'nombre', 'instagram', 'puntos', 'rondas', 'aciertos', 'actualizado']);
+  hoja_(ss, 'Jugadores', ['celular (id)', 'instagram', 'creado', 'última vez']);
+  hoja_(ss, 'Rondas', ['fecha', 'mes', 'celular (id)', 'instagram', 'trackId', 'canción', 'acertó', 'intento', 'dificultad', 'racha', 'válida']);
+  hoja_(ss, 'Ranking', ['mes', 'instagram', 'mejor racha', 'aciertos', 'actualizado']);
   hoja_(ss, 'Canciones', ['trackId', 'canción', 'jugadas', 'aciertos', 'a la primera', '% acierto', 'última vez']);
 }
 
@@ -52,25 +58,24 @@ function doGet(e) {
 }
 
 function ranking_(id) {
-  var mes = mesActual_(), cache = CacheService.getScriptCache(), clave = 'rk_' + mes, filas;
+  var mes = mesActual_(), cache = CacheService.getScriptCache(), clave = 'rk2_' + mes, filas;
   var guardado = cache.get(clave);
   if (guardado) filas = JSON.parse(guardado);
   else {
-    var h = SpreadsheetApp.getActive().getSheetByName('Ranking'), datos = h.getLastRow() > 1 ? h.getRange(2, 1, h.getLastRow() - 1, 7).getValues() : [];
-    filas = datos.filter(function (r) { return r[0] === mes && r[4] > 0; })
-      .map(function (r) { return { j: r[1], n: r[2], ig: r[3], p: r[4], r: r[5], a: r[6] }; })
-      .sort(function (a, b) { return b.p - a.p || b.a - a.a; });
+    var h = SpreadsheetApp.getActive().getSheetByName('Ranking'), datos = h.getLastRow() > 1 ? h.getRange(2, 1, h.getLastRow() - 1, 4).getValues() : [];
+    filas = datos.filter(function (r) { return String(r[0]) === mes && r[2] > 0; })
+      .map(function (r) { return { ig: String(r[1]), racha: r[2], aciertos: r[3] }; })
+      .sort(function (a, b) { return b.racha - a.racha || b.aciertos - a.aciertos; });
     cache.put(clave, JSON.stringify(filas), 30);
   }
-  var top = filas.slice(0, 20).map(function (f, i) { return { pos: i + 1, nombre: f.n, ig: ocultarIg_(f.ig), puntos: f.p, aciertos: f.a, yo: f.j === id }; });
-  var mio = null;
-  filas.forEach(function (f, i) { if (f.j === id) mio = { pos: i + 1, puntos: f.p, aciertos: f.a, rondas: f.r }; });
-  return { ok: true, mes: mes, total: filas.length, top: top, yo: mio };
+  var miIg = id && idValido_(id) ? igDe_(id) : '';
+  var top = filas.slice(0, 20).map(function (f, i) { return { pos: i + 1, ig: f.ig, racha: f.racha, aciertos: f.aciertos, yo: !!miIg && f.ig === miIg }; });
+  var yo = null;
+  filas.forEach(function (f, i) { if (miIg && f.ig === miIg) yo = { pos: i + 1, ig: f.ig, racha: f.racha, aciertos: f.aciertos }; });
+  return { ok: true, mes: mes, total: filas.length, top: top, yo: yo, miIg: miIg };
 }
 
-function ocultarIg_(ig) { ig = String(ig || ''); return ig.length <= 3 ? '@' + ig : '@' + ig.slice(0, 3) + '•••'; }
-
-/* ---------- Escrituras: registro y rondas ---------- */
+/* ---------- Escrituras: rondas y @ de Instagram ---------- */
 function doPost(e) {
   var d;
   try { d = JSON.parse(e.postData.contents); } catch (er) { return json_({ ok: false, error: 'formato' }); }
@@ -78,27 +83,22 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   if (!lock.tryLock(8000)) return json_({ ok: false, error: 'ocupado' });
   try {
-    if (d.accion === 'registrar') return json_(registrar_(d));
     if (d.accion === 'ronda') return json_(ronda_(d));
+    if (d.accion === 'instagram') return json_(vincular_(d));
     return json_({ ok: false, error: 'accion' });
   } finally { lock.releaseLock(); }
 }
 
-function registrar_(d) {
-  var nombre = limpiar_(d.nombre, 24), ig = limpiarIg_(d.ig);
-  if (nombre.length < 2 || ig.length < 2) return { ok: false, error: 'datos' };
-  var h = SpreadsheetApp.getActive().getSheetByName('Jugadores'), fila = buscar_(h, d.id), ahora = new Date();
-  if (fila) h.getRange(fila, 2, 1, 4).setValues([[nombre, ig, h.getRange(fila, 4).getValue(), ahora]]);
-  else h.appendRow([d.id, nombre, ig, ahora, ahora]);
-  // si ya tenía puntos este mes, actualiza el nombre en el ranking
-  var rk = SpreadsheetApp.getActive().getSheetByName('Ranking'), f2 = buscarRanking_(rk, mesActual_(), d.id);
-  if (f2) rk.getRange(f2, 3, 1, 2).setValues([[nombre, ig]]);
-  CacheService.getScriptCache().remove('rk_' + mesActual_());
-  return { ok: true };
+// estado de cada celular en el mes: racha actual, mejor racha y aciertos (lo lleva el servidor)
+function estado_(id) {
+  var mes = mesActual_(), raw = PropertiesService.getScriptProperties().getProperty('st_' + id), st = raw ? JSON.parse(raw) : null;
+  if (!st || st.mes !== mes) st = { mes: mes, actual: 0, mejor: 0, aciertos: 0 };
+  return st;
 }
+function guardarEstado_(id, st) { PropertiesService.getScriptProperties().setProperty('st_' + id, JSON.stringify(st)); }
 
 function ronda_(d) {
-  var ss = SpreadsheetApp.getActive(), mes = mesActual_(), props = PropertiesService.getScriptProperties();
+  var ss = SpreadsheetApp.getActive(), props = PropertiesService.getScriptProperties();
   var acierto = d.acierto === true, intento = Math.max(1, Math.min(3, parseInt(d.intento, 10) || 3));
   var dif = MULT[d.dificultad] ? d.dificultad : 'facil';
   var esperado = acierto ? Math.round(PUNTOS[intento - 1] * MULT[dif]) : 0;
@@ -113,23 +113,48 @@ function ronda_(d) {
   props.setProperty(claveD, String(nDia));
   if (nDia > MAX_RONDAS_DIA) valida = false;
 
-  var trackId = String(parseInt(d.trackId, 10) || ''), cancion = limpiar_(d.cancion, 80);
-  ss.getSheetByName('Rondas').appendRow([new Date(), "'" + mes, d.id, trackId, cancion, acierto, intento, dif, puntos, valida]);
+  // la racha la cuenta el servidor: una ronda dudosa corta la racha
+  var st = estado_(d.id);
+  if (acierto && valida) { st.actual++; st.aciertos++; if (st.actual > st.mejor) st.mejor = st.actual; }
+  else st.actual = 0;
+  guardarEstado_(d.id, st);
+
+  var ig = igDe_(d.id), trackId = String(parseInt(d.trackId, 10) || ''), cancion = limpiar_(d.cancion, 80);
+  ss.getSheetByName('Rondas').appendRow([new Date(), "'" + st.mes, d.id, ig, "'" + trackId, cancion, acierto, intento, dif, st.actual, valida]);
   estadistica_(ss.getSheetByName('Canciones'), trackId, cancion, acierto, intento);
 
-  // solo suman al ranking los jugadores registrados y las rondas válidas
-  var jug = ss.getSheetByName('Jugadores'), fj = buscar_(jug, d.id);
-  if (fj) jug.getRange(fj, 5).setValue(new Date());
-  if (fj && valida) {
-    var datosJ = jug.getRange(fj, 2, 1, 2).getValues()[0];
-    var rk = ss.getSheetByName('Ranking'), fr = buscarRanking_(rk, mes, d.id);
-    if (fr) {
-      var v = rk.getRange(fr, 5, 1, 3).getValues()[0];
-      rk.getRange(fr, 3, 1, 6).setValues([[datosJ[0], datosJ[1], v[0] + esperado, v[1] + 1, v[2] + (acierto ? 1 : 0), new Date()]]);
-    } else rk.appendRow(["'" + mes, d.id, datosJ[0], datosJ[1], esperado, 1, acierto ? 1 : 0, new Date()]);
-    CacheService.getScriptCache().remove('rk_' + mes);
+  // si el celular ya tiene un @, su ranking se actualiza solo
+  if (ig) subirRanking_(ig, st, acierto && valida ? 1 : 0);
+  return { ok: true, valida: valida, racha: st.actual, mejor: st.mejor, ig: ig };
+}
+
+function vincular_(d) {
+  var ig = limpiarIg_(d.ig);
+  if (ig.length < 2) return { ok: false, error: 'instagram' };
+  var h = SpreadsheetApp.getActive().getSheetByName('Jugadores'), fila = buscar_(h, d.id), ahora = new Date();
+  if (fila) h.getRange(fila, 2, 1, 3).setValues([[ig, h.getRange(fila, 3).getValue(), ahora]]);
+  else h.appendRow([d.id, ig, ahora, ahora]);
+  var st = estado_(d.id);
+  subirRanking_(ig, st, 0);
+  return { ok: true, ig: ig, mejor: st.mejor };
+}
+
+// si el @ ya está en el ranking del mes se reemplaza su fila: queda la mejor racha
+function subirRanking_(ig, st, sumaAcierto) {
+  var rk = SpreadsheetApp.getActive().getSheetByName('Ranking'), mes = mesActual_(), f = buscarRanking_(rk, mes, ig);
+  if (f) {
+    var v = rk.getRange(f, 3, 1, 2).getValues()[0];
+    var racha = Math.max(Number(v[0]) || 0, st.mejor), aciertos = sumaAcierto ? (Number(v[1]) || 0) + 1 : Math.max(Number(v[1]) || 0, st.aciertos);
+    rk.getRange(f, 3, 1, 3).setValues([[racha, aciertos, new Date()]]);
+  } else if (st.mejor > 0 || st.aciertos > 0) {
+    rk.appendRow(["'" + mes, ig, st.mejor, st.aciertos, new Date()]);
   }
-  return { ok: true, valida: valida, cuenta: !!fj };
+  CacheService.getScriptCache().remove('rk2_' + mes);
+}
+
+function igDe_(id) {
+  var h = SpreadsheetApp.getActive().getSheetByName('Jugadores'), f = buscar_(h, id);
+  return f ? String(h.getRange(f, 2).getValue()) : '';
 }
 
 function estadistica_(h, trackId, cancion, acierto, intento) {
@@ -146,9 +171,9 @@ function buscar_(h, valor) {
   return r ? r.getRow() : 0;
 }
 
-function buscarRanking_(h, mes, id) {
+function buscarRanking_(h, mes, ig) {
   if (h.getLastRow() < 2) return 0;
   var datos = h.getRange(2, 1, h.getLastRow() - 1, 2).getValues();
-  for (var i = datos.length - 1; i >= 0; i--) if (datos[i][0] === mes && datos[i][1] === id) return i + 2;
+  for (var i = datos.length - 1; i >= 0; i--) if (String(datos[i][0]) === mes && String(datos[i][1]) === ig) return i + 2;
   return 0;
 }
