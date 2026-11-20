@@ -39,10 +39,12 @@
   .streak b{ color:var(--orange); }
 
   /* encabezado */
-  .hero{ padding:56px 0 34px; display:grid; gap:34px; }
+  .hero{ padding:38px 0 28px; display:grid; gap:28px; }
   @media (min-width:900px){ .hero{ grid-template-columns:1.15fr .85fr; align-items:end; } }
   .kicker{ display:block; color:var(--orange); margin-bottom:18px; }
-  .title{ font-size:clamp(96px, 22vw, 200px); line-height:.82; letter-spacing:.01em; }
+  .title{ display:inline-block; font-size:clamp(84px, 19vw, 150px); line-height:.82; letter-spacing:.01em; padding:.1em .16em 0; background:var(--orange) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .25 0 0 0 0 .16 0 0 0 .28 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"); color:#1A1424; transform:rotate(-2.5deg); box-shadow:0 12px 28px rgba(0,0,0,.5); clip-path:polygon(0 4%, 3% 0, 97% 3%, 100% 0, 99% 96%, 96% 100%, 2% 97%, 0 100%); }
+  .title-row{ position:relative; display:inline-block; margin-top:6px; }
+  .tag-anio{ position:absolute; right:-16px; top:-14px; padding:6px 10px 3px; background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .25 0 0 0 0 .16 0 0 0 .28 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"); color:#1A1424; font-size:clamp(22px, 4vw, 30px); line-height:1; transform:rotate(8deg); box-shadow:0 6px 14px rgba(0,0,0,.45); z-index:1; }
   .tape{ display:inline-block; margin-top:14px; padding:9px 18px 7px; transform:rotate(-2deg); background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .32 0 0 0 0 .25 0 0 0 0 .16 0 0 0 .28 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"); color:#1A1424; font-size:clamp(26px, 5vw, 38px); line-height:1; box-shadow:0 8px 20px rgba(0,0,0,.45); clip-path:polygon(1% 6%, 99% 0, 100% 92%, 0 100%); }
   .lead{ margin-top:26px; max-width:520px; color:var(--cream-dim); font-size:21px; line-height:1.3; letter-spacing:.04em; }
   .stats{ display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--rule); border-bottom:1px solid var(--rule); }
@@ -55,8 +57,14 @@
   .game{ border:1px solid var(--rule); background:var(--ink); padding:clamp(18px,3.5vw,34px); margin-bottom:60px; }
   .round{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
   .lives{ display:flex; gap:6px; align-items:center; }
-  .lives i{ width:18px; height:18px; background:var(--cream); transition:background .3s; }
-  .lives i.lost{ background:transparent; border:1px solid var(--rule); }
+  .lives i{ display:block; width:28px; height:28px; color:var(--pink); }
+  .lives svg{ width:100%; height:100%; overflow:visible; }
+  .lives path{ fill:currentColor; stroke:currentColor; stroke-width:.7; stroke-linejoin:round; transform-box:fill-box; transition:transform .5s cubic-bezier(.3,1.4,.5,1), opacity .5s, fill .5s; }
+  .lives .h-l{ transform-origin:100% 100%; } .lives .h-r{ transform-origin:0 100%; }
+  .lives i.lost{ animation:latido-roto .45s ease; }
+  .lives i.lost .h-l{ transform:translate(-3px,3px) rotate(-22deg); opacity:.55; fill:var(--cream-dim); stroke:var(--cream-dim); }
+  .lives i.lost .h-r{ transform:translate(3px,5px) rotate(20deg); opacity:.55; fill:var(--cream-dim); stroke:var(--cream-dim); }
+  @keyframes latido-roto{ 0%{ transform:scale(1); } 30%{ transform:scale(1.35); } 55%{ transform:translateX(-3px) scale(1); } 75%{ transform:translateX(3px); } 100%{ transform:none; } }
   .player{ display:flex; align-items:center; gap:20px; }
   .play{ flex:none; width:76px; height:76px; border:0; cursor:pointer; background:var(--cream); color:var(--black); display:grid; place-items:center; box-shadow:6px 6px 0 var(--violet); transition:transform .15s, box-shadow .15s; }
   .play:hover{ transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--orange); }
@@ -117,6 +125,24 @@
   .btn:disabled{ opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
   .link{ background:none; border:0; cursor:pointer; font-size:22px; letter-spacing:.06em; text-decoration:none; border-bottom:2px solid var(--orange); padding-bottom:2px; }
   .link:hover{ color:var(--orange); }
+  @media (max-width:759px){
+    .topline{ padding-top:14px; }
+    .hero{ padding:22px 0 18px; gap:18px; }
+    .kicker{ margin-bottom:12px; }
+    .tape{ font-size:24px; margin-top:12px; padding:7px 14px 5px; }
+    .lead{ margin-top:14px; font-size:17px; }
+    .stat{ padding:10px 10px 8px; } .stat b{ font-size:34px; }
+    .game{ padding:16px; margin-bottom:36px; }
+    .round{ margin-bottom:14px; }
+    .play{ width:64px; height:64px; }
+    .estado{ margin-top:10px; }
+    .eq{ height:36px; margin-top:12px; }
+    .guesses{ margin:14px 0 12px; }
+    .g{ min-height:40px; font-size:19px; }
+    .answer input{ font-size:26px; min-height:48px; }
+    .row-btns{ margin-top:18px; }
+    .hint{ display:none; }
+  }
   .hint{ margin-top:16px; color:var(--cream-dim); font-size:17px; letter-spacing:.06em; }
 
   /* resultado */
@@ -146,6 +172,18 @@
   .b-facts{ display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:14px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:#3B3346; }
   .b-facts b{ font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:.02em; color:var(--tinta); margin-right:4px; font-weight:400; }
   .b-facts b.bpm{ color:var(--azul); }
+  .b-player{ display:flex; align-items:center; gap:12px; margin-top:16px; padding:10px 12px; background:rgba(23,18,31,.08); }
+  .boleto.pierde .b-player{ background:rgba(0,0,0,.18); }
+  .b-play{ flex:none; width:44px; height:44px; border:0; border-radius:50%; background:var(--tinta); color:var(--bc); display:grid; place-items:center; cursor:pointer; }
+  .b-play svg{ width:20px; height:20px; }
+  .b-time{ flex:none; font-family:'JetBrains Mono',monospace; font-weight:700; font-size:12px; letter-spacing:.06em; font-variant-numeric:tabular-nums; }
+  #bSeek{ flex:1; min-width:0; height:30px; -webkit-appearance:none; appearance:none; background:transparent; cursor:pointer; }
+  #bSeek::-webkit-slider-runnable-track{ height:6px; background:linear-gradient(90deg, var(--azul) var(--p,0%), rgba(23,18,31,.22) var(--p,0%)); }
+  #bSeek::-moz-range-track{ height:6px; background:rgba(23,18,31,.22); }
+  #bSeek::-moz-range-progress{ height:6px; background:var(--azul); }
+  #bSeek::-webkit-slider-thumb{ -webkit-appearance:none; width:18px; height:18px; margin-top:-6px; border-radius:50%; background:var(--tinta); border:3px solid var(--bc); }
+  #bSeek::-moz-range-thumb{ width:14px; height:14px; border-radius:50%; background:var(--tinta); border:3px solid var(--bc); }
+  .boleto.pierde #bSeek::-webkit-slider-runnable-track{ background:linear-gradient(90deg, #FBEFE0 var(--p,0%), rgba(0,0,0,.25) var(--p,0%)); }
   .b-btns{ display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px; }
   .boleto .btn{ background:var(--tinta); color:var(--paper); box-shadow:5px 5px 0 var(--orange); font-size:22px; }
   .boleto .btn:hover{ box-shadow:7px 7px 0 var(--violet); }
@@ -178,6 +216,11 @@
     .b-side{ padding-bottom:84px; } .b-barcode{ right:6px; width:28px; }
     .boleto{ width:92%; }
     .sello{ right:34px; top:72px; font-size:22px; padding:4px 8px 2px; }
+    .b-player{ flex-wrap:wrap; gap:8px 12px; }
+    #bSeek{ order:3; flex-basis:100%; }
+    .b-hr{ margin:14px 0 12px; }
+    .b-facts{ margin-top:10px; }
+    .b-name{ font-size:28px; }
     .b-pts{ font-size:42px; }
     .b-kick{ letter-spacing:.1em; }
   }
@@ -199,9 +242,9 @@
   <header class="hero">
     <div>
       <span class="kicker mono">Modo libre · clásicos EDM</span>
-      <h1 class="title">FanGuess</h1>
-      <span class="tape">Adivina la canción</span>
-      <p class="lead">Escucha un pedacito y escribe cuál es. Tienes 3 intentos: cada fallo te deja oír un poco más. Menos audio, más puntos. Juega todas las veces que quieras.</p>
+      <div class="title-row"><h1 class="title">FanGuess</h1><span class="tag-anio">2016</span></div>
+      <br><span class="tape">Adivina la canción</span>
+      <p class="lead">Escucha un pedacito y adivina cuál es. Tienes 3 vidas: cada fallo rompe un corazón y te deja oír un poco más. Juega todas las veces que quieras.</p>
     </div>
     <div class="stats" aria-live="polite">
       <div class="stat"><b id="kPts">0</b><span class="mono">Puntos</span></div>
@@ -216,7 +259,7 @@
     <div id="playing" hidden>
       <div class="round">
         <span class="mono dim">Clásicos EDM · Fan Tribute</span>
-        <div class="lives" aria-label="Intentos"><span class="mono dim" style="margin-right:6px">Intentos</span><i></i><i></i><i></i></div>
+        <div class="lives" aria-label="Vidas"><span class="mono dim" style="margin-right:6px">Vidas</span><i></i><i></i><i></i></div>
       </div>
       <div class="player">
         <button class="play" id="play" aria-label="Escuchar el fragmento">
@@ -239,7 +282,7 @@
       </div>
       <div class="row-btns">
         <button class="btn" id="send" disabled>Responder</button>
-        <button class="link" id="skip">Más audio (pierdes un intento)</button>
+        <button class="link" id="skip">Pierdes un intento</button>
       </div>
       <p class="hint">Elige una canción de la lista que aparece al escribir.</p>
     </div>
@@ -258,6 +301,11 @@
               <span class="b-extra" id="resExtra" hidden></span>
             </div>
             <div class="b-pts"><span id="resPts">+0</span><small>puntos</small></div>
+          </div>
+          <div class="b-player">
+            <button class="b-play" id="bPlay" type="button" aria-label="Reproducir"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="bIcon" d="M8 5v14l11-7z"/></svg></button>
+            <input type="range" id="bSeek" min="0" max="30" step="0.1" value="0" aria-label="Mover la canción">
+            <span class="b-time" id="bTime">0:00 / 0:30</span>
           </div>
           <div class="b-facts"><span><b class="bpm" id="fBpm">–</b>BPM aprox.</span><span><b id="fDur">–</b>duración</span></div>
           <hr class="b-hr">
@@ -375,6 +423,8 @@ function pintarOnda(el, n) {
   var puntos = 0, jugadas = 0, aciertos = 0, seguidas = 0, record = store.get('record') || 0;
   audio.preload = 'auto'; audio.setAttribute('playsinline', '');
   var wave = $('wave'); pintarOnda(wave, 72);
+  var CORAZON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path class="h-l" d="M12 6.5C10.5 4 7.9 3 5.6 3.6 2.8 4.4 1.5 7.5 2.6 10.3 3.9 13.6 8 17.3 12 21L10.6 16.5 12.8 13 10.8 9.5Z"/><path class="h-r" d="M12 6.5C13.5 4 16.1 3 18.4 3.6 21.2 4.4 22.5 7.5 21.4 10.3 20.1 13.6 16 17.3 12 21L10.6 16.5 12.8 13 10.8 9.5Z"/></svg>';
+  document.querySelectorAll('.lives i').forEach(function (i) { i.innerHTML = CORAZON; });
   $('guesses').innerHTML = '<div class="g"><span class="tag mono">Intento 1</span></div><div class="g"><span class="tag mono">Intento 2</span></div><div class="g"><span class="tag mono">Intento 3</span></div>';
 
   // ---- Canciones al azar, sin repetir hasta que salgan todas ----
@@ -471,7 +521,7 @@ function pintarOnda(el, n) {
   var turno = 0;
   function parar() {
     turno++; audio.pause(); wave.classList.add('idle'); $('play').disabled = false; $('play').classList.remove('wait');
-    if (!terminado) estado(intento < 2 ? 'Escribe tu respuesta o pide más audio' : 'Último intento · escribe tu respuesta', 'ok');
+    if (!terminado) estado(intento < 2 ? 'Escribe tu respuesta o pierde un intento para oír más' : 'Última vida · escribe tu respuesta', 'ok');
     setTimeout(function () { $('progress').style.width = 0; }, 400);
   }
   $('play').addEventListener('click', function () {
@@ -528,7 +578,7 @@ function pintarOnda(el, n) {
     if (ok) { filaIntento('ok', html); return finRonda(true); }
     filaIntento('bad', html); fallo();
   });
-  $('skip').addEventListener('click', function () { if (terminado) return; filaIntento('skip', '<span class="t">Pediste más audio</span>'); fallo(); });
+  $('skip').addEventListener('click', function () { if (terminado) return; filaIntento('skip', '<span class="t">Perdiste un intento para oír más</span>'); fallo(); });
 
   function fallo() {
     document.querySelectorAll('.lives i')[intento].classList.add('lost');
@@ -564,10 +614,35 @@ function pintarOnda(el, n) {
       bpmDe(c).then(function (b) { if (actual === c) $('fBpm').textContent = b || '–'; });
       $('result').classList.add('show');
       animarBoleta(ok, p);
-      audio.currentTime = 0;
+      // al terminar suena la canción y se puede mover o pausar
+      try { audio.currentTime = 0; } catch (e) {}
+      var pp = audio.play(); if (pp && pp.catch) pp.catch(function () {});
+      pintarReproductor();
       pintarStats();
     }, 500);
   }
+
+  // ---- Reproductor de la boleta ----
+  var arrastrando = false;
+  function fmt(x) { x = Math.max(0, Math.floor(x || 0)); return Math.floor(x / 60) + ':' + ('0' + x % 60).slice(-2); }
+  function pintarReproductor() {
+    if (!$('result').classList.contains('show')) return;
+    var d = isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 30, t = audio.currentTime || 0, sk = $('bSeek');
+    sk.max = d.toFixed(1);
+    if (!arrastrando) sk.value = t;
+    sk.style.setProperty('--p', (Number(sk.value) / d * 100) + '%');
+    $('bTime').textContent = fmt(Number(sk.value)) + ' / ' + fmt(d);
+    var sonando = !audio.paused && !audio.ended;
+    $('bIcon').setAttribute('d', sonando ? 'M6 5h4v14H6zM14 5h4v14h-4z' : 'M8 5v14l11-7z');
+    $('bPlay').setAttribute('aria-label', sonando ? 'Pausar' : 'Reproducir');
+  }
+  ['timeupdate', 'play', 'pause', 'ended', 'loadedmetadata'].forEach(function (ev) { audio.addEventListener(ev, pintarReproductor); });
+  $('bPlay').addEventListener('click', function () {
+    if (audio.paused || audio.ended) { if (audio.ended) audio.currentTime = 0; var q = audio.play(); if (q && q.catch) q.catch(function () {}); }
+    else audio.pause();
+  });
+  $('bSeek').addEventListener('input', function () { arrastrando = true; pintarReproductor(); });
+  $('bSeek').addEventListener('change', function () { try { audio.currentTime = Number(this.value); } catch (e) {} arrastrando = false; pintarReproductor(); });
 
   function limpiarTitulo(t) { return String(t || '').replace(/\s*\[[^\]]*\]/g, '').replace(/\s*\((feat|with|ft)\.?[^)]*\)/gi, '').replace(/\s*-\s*radio edit/i, '').trim(); }
 
