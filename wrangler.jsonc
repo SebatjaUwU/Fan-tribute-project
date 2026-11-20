@@ -1,0 +1,8 @@
+// Cloudflare Workers: publica la carpeta sitio/ (el sitio real).
+{
+  "name": "fan-tribute-project",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./sitio"
+  }
+}
