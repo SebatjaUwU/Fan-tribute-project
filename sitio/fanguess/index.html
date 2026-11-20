@@ -95,8 +95,23 @@
   .sugg .t b{ display:block; font-size:21px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .sugg .t small{ display:block; font-size:15px; color:var(--cream-dim); letter-spacing:.08em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .row-btns{ display:flex; align-items:center; gap:24px; margin-top:26px; flex-wrap:wrap; }
-  .play.wait{ animation:esperar 1s ease-in-out infinite; }
-  @keyframes esperar{ 50%{ opacity:.55; } }
+  /* señales de carga */
+  .play{ position:relative; }
+  .play.wait svg{ opacity:0; }
+  .play.wait::after{ content:''; position:absolute; width:30px; height:30px; border:4px solid var(--black); border-right-color:transparent; border-radius:50%; animation:girar .8s linear infinite; }
+  @keyframes girar{ to{ transform:rotate(360deg); } }
+  .estado{ display:flex; align-items:center; gap:10px; min-height:22px; margin-top:16px; font-size:15px; letter-spacing:.14em; text-transform:uppercase; color:var(--cream-dim); }
+  .estado.ok{ color:var(--orange); }
+  .estado.err{ color:var(--pink); }
+  .puntos{ display:inline-flex; gap:4px; }
+  .puntos i{ width:6px; height:6px; background:currentColor; animation:saltar 1s ease-in-out infinite; }
+  .puntos i:nth-child(2){ animation-delay:.15s; } .puntos i:nth-child(3){ animation-delay:.3s; }
+  @keyframes saltar{ 0%,100%{ opacity:.25; transform:translateY(0); } 50%{ opacity:1; transform:translateY(-4px); } }
+  .sugg .info{ padding:14px 16px; font-size:17px; letter-spacing:.1em; color:var(--cream-dim); display:flex; align-items:center; gap:10px; }
+  .cargador{ display:flex; align-items:flex-end; gap:5px; height:44px; margin-bottom:18px; }
+  .cargador i{ width:10px; height:100%; background:var(--cream); transform-origin:bottom; animation:subir .9s ease-in-out infinite; }
+  .cargador i:nth-child(2){ animation-delay:.12s; background:var(--violet); } .cargador i:nth-child(3){ animation-delay:.24s; } .cargador i:nth-child(4){ animation-delay:.36s; background:var(--orange); } .cargador i:nth-child(5){ animation-delay:.48s; }
+  @keyframes subir{ 0%,100%{ transform:scaleY(.2); } 50%{ transform:scaleY(1); } }
   .btn{ display:inline-block; padding:15px 22px 12px; background:var(--cream); color:var(--black); text-decoration:none; font-size:24px; letter-spacing:.06em; line-height:1; border:0; cursor:pointer; box-shadow:6px 6px 0 var(--violet); transition:transform .2s ease, box-shadow .2s ease; }
   .btn:hover{ transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--orange); }
   .btn:disabled{ opacity:.35; cursor:not-allowed; transform:none; box-shadow:none; }
@@ -153,7 +168,7 @@
   </header>
 
   <main class="game" id="jugar" aria-live="polite">
-    <div class="state" id="cargando">Cargando canciones…</div>
+    <div class="state" id="cargando"><div class="cargador"><i></i><i></i><i></i><i></i><i></i></div>Cargando canciones…</div>
 
     <div id="playing" hidden>
       <div class="round">
@@ -169,6 +184,7 @@
           <div class="ticks"><span class="on" id="t1">1 s</span><span id="t2">4 s</span><span id="t3">10 s</span><span>15 s</span></div>
         </div>
       </div>
+      <p class="estado" id="estado" aria-live="polite"></p>
       <div class="eq idle" id="wave" aria-hidden="true"></div>
 
       <div class="guesses" id="guesses"></div>
@@ -304,7 +320,7 @@ function pintarOnda(el, n) {
                 set: function (k, v) { try { localStorage.setItem('fg_' + k, JSON.stringify(v)); } catch (e) {} } };
 
   // ---- Estado ----
-  var cola = [], bolsa = [], actual = null, intento = 0, terminado = false, audio = new Audio(), bpms = {};
+  var cola = [], bolsa = [], actual = null, intento = 0, terminado = false, audio = new Audio(), lenta = null, bpms = {};
   var puntos = 0, jugadas = 0, aciertos = 0, seguidas = 0, record = store.get('record') || 0;
   audio.preload = 'auto'; audio.setAttribute('playsinline', '');
   var wave = $('wave'); pintarOnda(wave, 72);
@@ -345,14 +361,16 @@ function pintarOnda(el, n) {
   }
   function siguiente() {
     $('result').classList.remove('show'); $('playing').hidden = true;
-    $('cargando').hidden = false; $('cargando').textContent = 'Cargando canción…';
+    $('cargando').hidden = false; $('cargando').innerHTML = '<div class="cargador"><i></i><i></i><i></i><i></i><i></i></div>' + (actual ? 'Cargando la siguiente canción…' : 'Cargando canciones…');
+    clearTimeout(lenta); lenta = setTimeout(function () { if (!$('cargando').hidden) $('cargando').innerHTML = '<div class="cargador"><i></i><i></i><i></i><i></i><i></i></div>Está tardando un poco… tu conexión puede estar lenta.'; }, 6000);
     rellenar().then(function () {
       actual = cola.shift();
-      $('cargando').hidden = true;
+      clearTimeout(lenta); $('cargando').hidden = true;
       iniciarRonda();
       bpmDe(actual);
       rellenar().then(function () { if (cola[0]) descargar(cola[0]).catch(function () {}); }).catch(function () {});
     }).catch(function (e) {
+      clearTimeout(lenta);
       $('cargando').innerHTML = 'No pudimos cargar las canciones. Revisa tu conexión y vuelve a intentar.<br><small style="opacity:.5">(' + (e && e.message) + ')</small><br><br><button class="btn" id="retry">Reintentar</button>';
       $('retry').addEventListener('click', siguiente);
     });
@@ -367,14 +385,19 @@ function pintarOnda(el, n) {
 
   function iniciarRonda() {
     intento = 0; terminado = false;
-    var t = actual;
+    var t = actual, listo = false;
     audio.src = t.previewUrl; audio.load();
+    estado('Preparando la canción', 'carga'); $('play').classList.add('wait');
+    function yaLista() { if (listo || actual !== t) return; listo = true; if (audio.paused) { estado('Lista · dale play', 'ok'); $('play').classList.remove('wait'); } }
+    audio.addEventListener('canplaythrough', yaLista, { once: true });
+    setTimeout(function () { if (!listo && actual === t && audio.paused) estado('La canción está tardando en cargar · puedes darle play igual', 'carga'); }, 5000);
     descargar(t).then(function (buf) {
+      yaLista();
       if (actual !== t || !audio.paused) return;
       if (blobActual) URL.revokeObjectURL(blobActual);
       blobActual = URL.createObjectURL(new Blob([buf], { type: 'audio/mp4' }));
       audio.src = blobActual; audio.load();
-    }).catch(function () {});
+    }).catch(function () { if (actual === t && !listo) estado('No se pudo descargar · dale play para intentar', 'err'); $('play').classList.remove('wait'); });
     document.querySelectorAll('.lives i').forEach(function (i) { i.classList.remove('lost'); });
     $('guesses').innerHTML = '<div class="g"><span class="tag mono">Intento 1</span></div><div class="g"><span class="tag mono">Intento 2</span></div><div class="g"><span class="tag mono">Intento 3</span></div>';
     $('unlocked').style.width = (CORTES[0] / TOTAL * 100) + '%';
@@ -384,25 +407,36 @@ function pintarOnda(el, n) {
     pintarStats();
   }
 
+  // ---- Mensajes de estado bajo el reproductor ----
+  var PUNTOS_HTML = '<span class="puntos" aria-hidden="true"><i></i><i></i><i></i></span>';
+  function estado(txt, tipo) {
+    var e = $('estado'); e.className = 'estado' + (tipo && tipo !== 'carga' ? ' ' + tipo : '');
+    e.innerHTML = (tipo === 'carga' ? PUNTOS_HTML : '') + '<span>' + txt + '</span>';
+  }
+
   // ---- Reproducir el fragmento ----
   // El corte se mide con el tiempo real del audio (no con un reloj): si el celular tarda en cargar,
   // igual suena el segundo completo.
   var turno = 0;
   function parar() {
     turno++; audio.pause(); wave.classList.add('idle'); $('play').disabled = false; $('play').classList.remove('wait');
+    if (!terminado) estado(intento < 2 ? 'Escribe tu respuesta o pide más audio' : 'Último intento · escribe tu respuesta', 'ok');
     setTimeout(function () { $('progress').style.width = 0; }, 400);
   }
   $('play').addEventListener('click', function () {
     var seg = CORTES[Math.min(intento, 2)], mio = ++turno, limite = performance.now() + 15000;
     $('play').disabled = true; $('play').classList.add('wait'); $('progress').style.width = 0;
+    estado(audio.readyState >= 3 ? 'Sonando' : 'Cargando el audio', 'carga');
+    var avisoLento = setTimeout(function () { if (mio === turno && !(audio.currentTime > 0)) estado('Tu conexión está lenta · ya casi suena', 'carga'); }, 3500);
     try { audio.currentTime = 0; } catch (e) {}
-    var p = audio.play(); if (p && p.catch) p.catch(function () { if (mio === turno) parar(); });
+    var p = audio.play(); if (p && p.catch) p.catch(function () { if (mio === turno) { clearTimeout(avisoLento); parar(); estado('No sonó · revisa que el celular no esté en silencio y dale play otra vez', 'err'); } });
     (function paso() {
       if (mio !== turno) return;
       var ct = audio.currentTime || 0;
-      if (ct > 0 && !audio.paused) { wave.classList.remove('idle'); $('play').classList.remove('wait'); }
+      if (ct > 0 && !audio.paused && $('play').classList.contains('wait')) { clearTimeout(avisoLento); wave.classList.remove('idle'); $('play').classList.remove('wait'); estado('Sonando · ' + seg + (seg === 1 ? ' segundo' : ' segundos'), 'ok'); }
       $('progress').style.width = (Math.min(ct, seg) / TOTAL * 100) + '%';
-      if (ct >= seg || audio.ended || (ct === 0 && performance.now() > limite)) return parar();
+      if (ct === 0 && performance.now() > limite) { clearTimeout(avisoLento); parar(); return estado('No sonó · revisa tu conexión y dale play otra vez', 'err'); }
+      if (ct >= seg || audio.ended) { clearTimeout(avisoLento); return parar(); }
       requestAnimationFrame(paso);
     })();
   });
@@ -413,6 +447,7 @@ function pintarOnda(el, n) {
     var q = this.value.trim(); elegida = null; $('send').disabled = true;
     clearTimeout(deb);
     if (q.length < 2) { $('sugg').classList.remove('open'); return; }
+    $('sugg').innerHTML = '<div class="info">' + PUNTOS_HTML + 'Buscando…</div>'; $('sugg').classList.add('open');
     deb = setTimeout(function () {
       ultimaQ = q;
       itunes({ term: q, entity: 'song', limit: 6 }).then(function (res) {
@@ -424,8 +459,9 @@ function pintarOnda(el, n) {
           b.addEventListener('click', function () { elegida = t; $('ans').value = t.trackName + ' – ' + t.artistName; s.classList.remove('open'); $('send').disabled = false; $('ans').focus(); });
           s.appendChild(b);
         });
-        s.classList.toggle('open', res.length > 0);
-      }).catch(function () {});
+        if (!res.length) s.innerHTML = '<div class="info">Sin resultados · prueba con otro nombre o el artista</div>';
+        s.classList.add('open');
+      }).catch(function () { if (q === ultimaQ) $('sugg').innerHTML = '<div class="info">No se pudo buscar · revisa tu conexión</div>'; });
     }, 250);
   });
   $('ans').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); if (!$('send').disabled) $('send').click(); } });
@@ -449,6 +485,7 @@ function pintarOnda(el, n) {
     if (intento >= 3) return finRonda(false);
     $('unlocked').style.width = (CORTES[intento] / TOTAL * 100) + '%';
     $('t' + (intento + 1)).classList.add('on');
+    estado('Se desbloquearon ' + CORTES[intento] + ' segundos · dale play otra vez', 'ok');
   }
 
   function minSeg(ms) { if (!ms) return '–'; var s = Math.round(ms / 1000); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
@@ -468,7 +505,7 @@ function pintarOnda(el, n) {
       $('fDur').textContent = minSeg(c.trackTimeMillis);
       $('fGen').textContent = c.primaryGenreName || '–';
       $('fGen').title = c.primaryGenreName || '';
-      $('fBpm').textContent = '…';
+      $('fBpm').innerHTML = '<span class="puntos" style="font-size:16px" title="Calculando el BPM"><i></i><i></i><i></i></span>';
       bpmDe(c).then(function (b) { if (actual === c) $('fBpm').textContent = b || '–'; });
       $('resPts').textContent = '+' + p;
       $('result').classList.add('show');
