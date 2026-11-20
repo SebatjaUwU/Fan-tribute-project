@@ -10,9 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
 <style>
-  /* Fuentes: Avant Garde Gothic para todo (TeX Gyre Adventor, versión libre incluida en fonts/) e Impact / fantasy para el título */
-  @font-face{ font-family:'Avant Garde FT'; src:local('ITC Avant Garde Gothic'), local('Avant Garde'), url(fonts/adventor-regular.woff2) format('woff2'); font-weight:400; font-display:swap; }
-  @font-face{ font-family:'Avant Garde FT'; src:local('ITC Avant Garde Gothic Bold'), local('AvantGarde-Bold'), url(fonts/adventor-bold.woff2) format('woff2'); font-weight:700; font-display:swap; }
+  /* Fuentes: la del sistema para todo e Impact / fantasy para el título */
+  /* Letra del sistema, como Instagram: San Francisco en iPhone/iPad/Mac, Roboto en Android, Segoe UI en Windows */
   body{ font-synthesis:none; letter-spacing:0.018em; }
   *{ font-style:normal; }
   :root{
@@ -20,7 +19,7 @@
     --violet:#8E3BFF; --pink:#FF4F7A; --orange:#FF9A1F; --paper:#E9DCC2; --rule:rgba(243,235,221,.18);
   }
   *{ margin:0; padding:0; box-sizing:border-box; }
-  body{ background:var(--black); color:var(--cream); font-family:'Avant Garde FT','ITC Avant Garde Gothic','Century Gothic',sans-serif; text-transform:uppercase; -webkit-font-smoothing:antialiased; overflow-x:hidden; min-height:100vh; }
+  body{ background:var(--black); color:var(--cream); font-family:-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-tap-highlight-color:transparent; -webkit-font-smoothing:antialiased; overflow-x:hidden; min-height:100vh; }
   body::after{ content:''; position:fixed; inset:0; z-index:50; pointer-events:none; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E"); opacity:.09; mix-blend-mode:overlay; }
   a{ color:inherit; }
   button,input{ font:inherit; color:inherit; letter-spacing:inherit; }
@@ -85,6 +84,7 @@
   .player{ display:flex; align-items:center; gap:20px; }
   .play{ flex:none; width:76px; height:76px; border:0; cursor:pointer; background:var(--cream); color:var(--black); display:grid; place-items:center; box-shadow:6px 6px 0 var(--violet); transition:transform .15s, box-shadow .15s; }
   .play:hover{ transform:translate(-2px,-2px); box-shadow:8px 8px 0 var(--orange); }
+  .play.sonando{ background:var(--orange); }
   .play:disabled{ cursor:default; box-shadow:3px 3px 0 var(--violet); transform:translate(3px,3px); }
   .play svg{ width:30px; height:30px; }
   .track{ flex:1; min-width:0; }
@@ -106,7 +106,7 @@
   .g .t{ min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .answer{ position:relative; margin-top:26px; }
   .answer label{ display:block; color:var(--cream-dim); margin-bottom:6px; }
-  .answer input{ width:100%; min-height:56px; border:0; border-bottom:2px solid var(--cream); background:transparent; padding:6px 0 2px; font-size:18px; }
+  .answer input{ width:100%; min-height:56px; border:0; border-bottom:2px solid var(--cream); background:transparent; padding:6px 0 2px; font-size:20px; }
   .answer input::placeholder{ color:rgba(243,235,221,.3); }
   .answer input:focus{ outline:none; border-bottom-color:var(--orange); }
   .sugg{ position:absolute; left:0; right:0; bottom:calc(100% + 6px); background:var(--black); border:1px solid var(--rule); display:none; z-index:5; }
@@ -154,7 +154,7 @@
     .estado{ margin-top:10px; }
     .eq{ height:36px; margin-top:12px; }
     .g{ min-height:40px; font-size:15.6px; }
-    .answer input{ font-size:15.6px; min-height:48px; }
+    .answer input{ font-size:17px; min-height:48px; }
     .row-btns{ margin-top:18px; }
     .hint{ display:none; }
   }
@@ -241,11 +241,17 @@
   .state{ padding:40px 0; color:var(--cream-dim); font-size:13.2px; }
   footer{ border-top:1px solid var(--rule); padding:26px 0 40px; color:var(--cream-dim); font-size:13.1px; letter-spacing:0.048em; }
   @media (prefers-reduced-motion:reduce){ *{ animation:none !important; transition:none !important; } }
-  button{ text-transform:inherit; }
+  button, a, input{ touch-action:manipulation; }
+  .title, .ticks, .streak, .brand-name, .tag-anio, .sello, .mockbar, .b-name, .b-pts small, .b-facts{ text-transform:uppercase; }
+  .btn{ font-weight:700; letter-spacing:.01em; }
+  .link{ font-weight:600; }
   .answer input{ text-transform:none; }
   /* pesos de la fuente */
   .b-title, .stat b, .b-pts, .b-name, .tape, .tag-anio, .sello, .btn{ font-weight:700; }
   .estado:empty{ display:none; }
+  .teclas{ display:none; }
+  @media (hover:hover) and (pointer:fine){ .teclas{ display:inline; } .b-teclas{ display:block; margin:12px 0 16px; font-size:12.5px; color:#3B3346; } .boleto.pierde .b-teclas{ color:rgba(251,239,224,.75); } }
+  kbd{ display:inline-block; min-width:1.6em; padding:1px 6px; border:1px solid currentColor; border-bottom-width:2px; border-radius:4px; font:inherit; font-size:.9em; text-align:center; opacity:.85; }
   .round{ margin-bottom:10px !important; }
 </style>
 </head>
@@ -279,7 +285,7 @@
       </div>
       <div class="player">
         <button class="play" id="play" aria-label="Escuchar el fragmento">
-          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="pIcon" d="M8 5v14l11-7z"/></svg>
         </button>
         <div class="track">
           <div class="timeline"><div class="unlocked" id="unlocked"></div><div class="progress" id="progress"></div></div>
@@ -298,7 +304,7 @@
         <button class="btn" id="send" disabled>Responder</button>
         <button class="link" id="skip">Pierdes un intento</button>
       </div>
-      <p class="hint">Elige una canción de la lista que aparece al escribir.</p>
+      <p class="hint">Elige una canción de la lista que aparece al escribir. <span class="teclas">Teclado: <kbd>Espacio</kbd> reproduce o pausa · <kbd>/</kbd> escribir · <kbd>Esc</kbd> salir</span></p>
     </div>
 
     <div class="result" id="result" aria-live="polite">
@@ -322,6 +328,7 @@
           </div>
           <div class="b-facts"><span><b class="bpm" id="fBpm">–</b>BPM aprox.</span><span><b id="fDur">–</b>duración</span><span><b id="fAnio">–</b>año</span></div>
           <hr class="b-hr">
+          <p class="teclas b-teclas"><kbd>Espacio</kbd> pausa · <kbd>←</kbd> <kbd>→</kbd> mover 5 s · <kbd>Enter</kbd> siguiente</p>
           <div class="b-btns">
             <button class="btn" id="next">Siguiente canción</button>
             <button class="link" id="reset">Reiniciar puntos</button>
@@ -535,17 +542,23 @@ function pintarOnda(el, n) {
   // El corte se mide con el tiempo real del audio (no con un reloj): si el celular tarda en cargar,
   // igual suena el segundo completo.
   var turno = 0;
-  function parar() {
-    turno++; audio.pause(); wave.classList.add('idle'); $('play').disabled = false; $('play').classList.remove('wait');
+  var ICON_PLAY = 'M8 5v14l11-7z', ICON_PAUSA = 'M6 5h4v14H6zM14 5h4v14h-4z', pausado = false;
+  function iconoPlay(sonando) { $('pIcon').setAttribute('d', sonando ? ICON_PAUSA : ICON_PLAY); $('play').setAttribute('aria-label', sonando ? 'Pausar el fragmento' : 'Escuchar el fragmento'); $('play').classList.toggle('sonando', sonando); }
+  function parar(manual) {
+    turno++; audio.pause(); wave.classList.add('idle'); $('play').disabled = false; $('play').classList.remove('wait'); iconoPlay(false);
+    pausado = manual === true && !terminado;
+    if (pausado) { estado('En pausa · dale play o la barra espaciadora para seguir', 'ok'); return; }
     if (!terminado) estado(intento < 2 ? 'Escribe tu respuesta o pierde un intento para oír más' : 'Última vida · escribe tu respuesta', 'ok');
     setTimeout(function () { $('progress').style.width = 0; }, 400);
   }
   $('play').addEventListener('click', function () {
+    if ($('play').classList.contains('sonando')) return parar(true);
     var seg = CORTES[Math.min(intento, 2)], mio = ++turno, limite = performance.now() + 15000;
-    $('play').disabled = true; $('play').classList.add('wait'); $('progress').style.width = 0;
+    var desde = pausado && audio.currentTime > 0 && audio.currentTime < seg ? audio.currentTime : 0; pausado = false;
+    $('play').classList.add('wait'); iconoPlay(true); if (!desde) $('progress').style.width = 0;
     estado(audio.readyState >= 3 ? 'Sonando' : 'Cargando el audio', 'carga');
     var avisoLento = setTimeout(function () { if (mio === turno && !(audio.currentTime > 0)) estado('Tu conexión está lenta · ya casi suena', 'carga'); }, 3500);
-    try { audio.currentTime = 0; } catch (e) {}
+    try { audio.currentTime = desde; } catch (e) {}
     var p = audio.play(); if (p && p.catch) p.catch(function () { if (mio === turno) { clearTimeout(avisoLento); parar(); estado('No sonó · revisa que el celular no esté en silencio y dale play otra vez', 'err'); } });
     (function paso() {
       if (mio !== turno) return;
@@ -556,6 +569,24 @@ function pintarOnda(el, n) {
       if (ct >= seg || audio.ended) { clearTimeout(avisoLento); return parar(); }
       requestAnimationFrame(paso);
     })();
+  });
+
+  // ---- Teclado: Espacio reproduce o pausa, Enter pasa a la siguiente, ← → mueve la canción, / escribe ----
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target, escribiendo = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA');
+    var enBoleta = $('result').classList.contains('show'), jugando = !$('playing').hidden;
+    if (escribiendo) { if (e.key === 'Escape') { t.blur(); $('sugg').classList.remove('open'); } return; }
+    if (e.key === ' ' || e.code === 'Space' || e.key === 'k' || e.key === 'K') {
+      e.preventDefault();
+      if (enBoleta) $('bPlay').click(); else if (jugando && !terminado) $('play').click();
+    } else if (e.key === 'Enter' && enBoleta && t.id !== 'reset') {
+      e.preventDefault(); $('next').click();
+    } else if ((e.key === 'ArrowRight' || e.key === 'ArrowLeft') && enBoleta) {
+      e.preventDefault(); try { audio.currentTime = Math.max(0, Math.min((audio.duration || 30) - .1, audio.currentTime + (e.key === 'ArrowRight' ? 5 : -5))); } catch (er) {}
+    } else if (e.key === '/' && jugando) {
+      e.preventDefault(); $('ans').focus();
+    }
   });
 
   // ---- Buscador con carátulas (busca en todo el catálogo para no delatar la respuesta) ----
