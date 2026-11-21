@@ -68,7 +68,7 @@ Los links son `https://checkout.wompi.co/l/<ID>`. Todos redirigen a `confirmacio
 ## 5. Automatización (Google Apps Script)
 
 ### Medellín (`eventos-hub/apps-script/medellin/Code.gs`, ligado a la hoja de ventas)
-- URL de la implementación (acceso "Cualquier persona"): `https://script.google.com/macros/s/AKfycby-x7O6z_Q2MvI2hKWLmS5CH22oLgbxrgAtQTcI6v5XwHokZvO3l5D_LaRR5LV_VNA7/exec`
+- URL de la implementación (acceso "Cualquier persona"): `https://script.google.com/macros/s/AKfycbzkb6N5Z6NtKPJuCGKByjtxdoIV_xMvHu6nnK0DLPxBPZSxcqOkBg2vjfmkdp5m6u7-/exec`
 - `?action=cupos` alimenta el sold-out automático de la página.
 - `revisarCorreosWompi()` corre cada 5 minutos: lee en Gmail los correos "Transacción APROBADA … ref. X" de Wompi, registra las boletas en la hoja **Repositorio QR**, envía el correo con las boletas (cada una como imagen) y avisa a fantributeco@gmail.com. Etiquetas: `MDE-QR-Procesado`, `MDE-QR-Revisar`, `MDE-No-es-Medellin`.
 - Ventas manuales por WhatsApp: se llenan en la hoja y se envían desde el menú **🎟️ Boletería → Enviar QR de las ventas nuevas**.
