@@ -19,8 +19,8 @@
  *     Si ese @ ya está en el ranking del mes, se actualiza (queda la mejor racha).
  *   - Ranking: mejor racha del mes; si empatan, gana quien tenga más aciertos.
  *
- *   - Premios por racha: 10 seguidas = 5% · 20 = 10% · 30 = 11% · 40 = 12% · 50 = 13% · 60 = 14% · 70 = 15%
- *     · 80 = pase gratis. El servidor revisa la racha antes de dar el código y lo anota en la hoja Premios.
+ *   - Premios por racha (todo es por una boleta individual): 10 seguidas = 5% · 20 = 7% · 30 = 10%
+ *     · 40 = boleta gratis. El servidor revisa la racha antes de dar el código y lo anota en la hoja Premios.
  *
  * Hojas: Jugadores · Rondas · Ranking · Canciones (estadísticas) · Premios
  */
@@ -30,7 +30,8 @@ var PUNTOS = [300, 200, 100];
 var MULT = { facil: 1, medio: 1.5, dificil: 2 };
 var MIN_SEG_ENTRE_RONDAS = 2.5;    // nadie escucha, adivina y pasa de canción en menos de 2,5 s
 var MAX_RONDAS_DIA = 400;          // tope por celular por día
-var PREMIOS = { 10: '5% de descuento', 20: '10% de descuento', 30: '11% de descuento', 40: '12% de descuento', 50: '13% de descuento', 60: '14% de descuento', 70: '15% de descuento', 80: 'Pase gratis a un evento' };
+var PREMIOS = { 10: '5% de descuento en una boleta individual', 20: '7% de descuento en una boleta individual', 30: '10% de descuento en una boleta individual', 40: 'Boleta individual gratis' };
+var NIVEL_GRATIS = 40;
 
 function prepararHoja() {
   var ss = SpreadsheetApp.getActive();
@@ -105,13 +106,13 @@ function premio_(p) {
   var n = parseInt(p.n, 10), st = estado_(p.id), props = PropertiesService.getScriptProperties();
   if (!PREMIOS[n]) return { ok: false, error: 'nivel' };
   var paseYa = props.getProperty('pase_' + p.id + '_' + st.mes);
-  var vale = st.actual >= n || (n === 80 && st.mejor >= 80 && !paseYa);
+  var vale = st.actual >= n || (n === NIVEL_GRATIS && st.mejor >= NIVEL_GRATIS && !paseYa);
   if (!vale) return { ok: false, error: 'racha', racha: st.actual };
   var ig = limpiarIg_(p.ig) || igDe_(p.id);
   var codigo = 'FG' + n + '-' + Utilities.getUuid().replace(/-/g, '').slice(0, 6).toUpperCase();
   var h = hoja_(SpreadsheetApp.getActive(), 'Premios', ['fecha', 'mes', 'código', 'premio', 'racha', 'instagram', 'celular (id)', 'estado']);
   h.appendRow([new Date(), "'" + st.mes, codigo, PREMIOS[n], Math.max(st.actual, n), ig ? '@' + ig : '', p.id, 'PENDIENTE']);
-  if (n === 80) props.setProperty('pase_' + p.id + '_' + st.mes, codigo);
+  if (n === NIVEL_GRATIS) props.setProperty('pase_' + p.id + '_' + st.mes, codigo);
   st.actual = 0; guardarEstado_(p.id, st);   // reclamar cierra la partida
   return { ok: true, codigo: codigo, premio: PREMIOS[n], nivel: n };
 }
