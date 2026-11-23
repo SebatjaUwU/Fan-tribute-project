@@ -19,14 +19,18 @@
  *     Si ese @ ya está en el ranking del mes, se actualiza (queda la mejor racha).
  *   - Ranking: mejor racha del mes; si empatan, gana quien tenga más aciertos.
  *
- * Hojas: Jugadores · Rondas · Ranking · Canciones (estadísticas)
+ *   - Premios por racha: 10 seguidas = 5% · 20 = 10% · 30 = 11% · 40 = 12% · 50 = 13% · 60 = 14% · 70 = 15%
+ *     · 80 = pase gratis. El servidor revisa la racha antes de dar el código y lo anota en la hoja Premios.
+ *
+ * Hojas: Jugadores · Rondas · Ranking · Canciones (estadísticas) · Premios
  */
 
 var ZONA = 'America/Bogota';
 var PUNTOS = [300, 200, 100];
 var MULT = { facil: 1, medio: 1.5, dificil: 2 };
-var MIN_SEG_ENTRE_RONDAS = 4;      // nadie escucha, adivina y pasa de canción en menos de 4 s
+var MIN_SEG_ENTRE_RONDAS = 2.5;    // nadie escucha, adivina y pasa de canción en menos de 2,5 s
 var MAX_RONDAS_DIA = 400;          // tope por celular por día
+var PREMIOS = { 10: '5% de descuento', 20: '10% de descuento', 30: '11% de descuento', 40: '12% de descuento', 50: '13% de descuento', 60: '14% de descuento', 70: '15% de descuento', 80: 'Pase gratis a un evento' };
 
 function prepararHoja() {
   var ss = SpreadsheetApp.getActive();
@@ -34,6 +38,7 @@ function prepararHoja() {
   hoja_(ss, 'Rondas', ['fecha', 'mes', 'celular (id)', 'instagram', 'trackId', 'canción', 'acertó', 'intento', 'dificultad', 'racha', 'válida']);
   hoja_(ss, 'Ranking', ['mes', 'instagram', 'mejor racha', 'aciertos', 'actualizado']);
   hoja_(ss, 'Canciones', ['trackId', 'canción', 'jugadas', 'aciertos', 'a la primera', '% acierto', 'última vez']);
+  hoja_(ss, 'Premios', ['fecha', 'mes', 'código', 'premio', 'racha', 'instagram', 'celular (id)', 'estado']);
 }
 
 function hoja_(ss, nombre, encabezados) {
@@ -54,6 +59,12 @@ function idValido_(id) { return /^[a-z0-9]{12,40}$/.test(String(id || '')); }
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.accion === 'ranking') return json_(ranking_(p.id));
+  if (p.accion === 'premio') {
+    if (!idValido_(p.id)) return json_({ ok: false, error: 'id' });
+    var lock = LockService.getScriptLock();
+    if (!lock.tryLock(8000)) return json_({ ok: false, error: 'ocupado' });
+    try { return json_(premio_(p)); } finally { lock.releaseLock(); }
+  }
   return json_({ ok: true, servicio: 'FanGuess' });
 }
 
@@ -87,6 +98,22 @@ function doPost(e) {
     if (d.accion === 'instagram') return json_(vincular_(d));
     return json_({ ok: false, error: 'accion' });
   } finally { lock.releaseLock(); }
+}
+
+/* ---------- Premios: el servidor revisa la racha y entrega un código ---------- */
+function premio_(p) {
+  var n = parseInt(p.n, 10), st = estado_(p.id), props = PropertiesService.getScriptProperties();
+  if (!PREMIOS[n]) return { ok: false, error: 'nivel' };
+  var paseYa = props.getProperty('pase_' + p.id + '_' + st.mes);
+  var vale = st.actual >= n || (n === 80 && st.mejor >= 80 && !paseYa);
+  if (!vale) return { ok: false, error: 'racha', racha: st.actual };
+  var ig = limpiarIg_(p.ig) || igDe_(p.id);
+  var codigo = 'FG' + n + '-' + Utilities.getUuid().replace(/-/g, '').slice(0, 6).toUpperCase();
+  var h = hoja_(SpreadsheetApp.getActive(), 'Premios', ['fecha', 'mes', 'código', 'premio', 'racha', 'instagram', 'celular (id)', 'estado']);
+  h.appendRow([new Date(), "'" + st.mes, codigo, PREMIOS[n], Math.max(st.actual, n), ig ? '@' + ig : '', p.id, 'PENDIENTE']);
+  if (n === 80) props.setProperty('pase_' + p.id + '_' + st.mes, codigo);
+  st.actual = 0; guardarEstado_(p.id, st);   // reclamar cierra la partida
+  return { ok: true, codigo: codigo, premio: PREMIOS[n], nivel: n };
 }
 
 // estado de cada celular en el mes: racha actual, mejor racha y aciertos (lo lleva el servidor)
