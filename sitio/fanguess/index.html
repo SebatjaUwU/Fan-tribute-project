@@ -274,6 +274,20 @@
   .b-title, .stat b, .b-pts, .b-name, .tape, .tag-anio, .sello, .btn{ font-weight:700; }
   .estado:empty{ display:none; }
   /* botón Responder: grande, redondeado y con sombra del color de la canción */
+  /* modos de juego */
+  .modos{ margin:6px 0 20px; }
+  .modos-head{ display:flex; justify-content:space-between; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .modos-tit{ font-size:12.5px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--cream-dim); }
+  .modos-nota{ font-size:12.5px; color:var(--cream-dim); } .modos-nota b{ color:var(--cream); }
+  .modos-fila{ display:flex; gap:8px; overflow-x:auto; padding:2px 2px 8px; scrollbar-width:thin; -webkit-overflow-scrolling:touch; }
+  .modo{ flex:none; display:flex; flex-direction:column; align-items:flex-start; gap:2px; min-height:52px; padding:8px 14px; border:1.5px solid var(--rule); border-radius:14px; background:var(--ink); color:var(--cream); cursor:pointer; font:inherit; text-align:left; transition:border-color .2s, background .2s, transform .15s; }
+  .modo b{ font-size:15px; font-weight:800; white-space:nowrap; }
+  .modo small{ font-size:11.5px; color:var(--cream-dim); white-space:nowrap; }
+  .modo:hover{ border-color:var(--cream-dim); transform:translateY(-1px); }
+  .modo[aria-selected="true"]{ border-color:var(--tono-b); background:color-mix(in srgb, var(--tono-b) 16%, var(--ink)); }
+  .modo[aria-selected="true"] small{ color:var(--cream); }
+  .modo.tema b::before{ content:'★ '; color:var(--tono-b); }
+  @media (max-width:759px){ .modos{ margin:2px 0 14px; } }
   .responder{ display:flex; align-items:center; justify-content:center; gap:12px; width:100%; min-height:60px; padding:0 24px; border:0; border-radius:16px; cursor:pointer;
     background:linear-gradient(135deg, var(--tono-a), var(--tono-b) 55%, var(--tono-c)); color:#17121F; font-size:19px; font-weight:800; letter-spacing:.01em;
     box-shadow:0 10px 24px color-mix(in srgb, var(--tono-b) 45%, transparent), inset 0 1px 0 rgba(255,255,255,.45); transition:transform .15s ease, box-shadow .2s ease, filter .2s; }
@@ -365,8 +379,8 @@
   .pr-kick{ display:inline-block; padding:5px 12px 4px; border-radius:99px; background:#17121F; color:var(--paper); font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
   .pr-card h2{ margin-top:12px; font-family:Impact,'Anton',fantasy; font-weight:400; font-size:clamp(46px,13vw,64px); line-height:.95; text-transform:uppercase; }
   .pr-gana{ margin-top:8px; font-size:18px; line-height:1.4; } .pr-gana b{ color:var(--tono-osc); font-weight:800; }
-  .pr-escalera{ list-style:none; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; margin:18px 0 6px; }
-  .pr-escalera li{ padding:9px 4px 8px; border-radius:10px; background:rgba(23,18,31,.08); font-size:15px; font-weight:800; line-height:1.15; color:#5c546b; }
+  .pr-escalera{ list-style:none; display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; margin:18px 0 6px; }
+  .pr-escalera li{ padding:8px 2px 7px; border-radius:9px; background:rgba(23,18,31,.08); font-size:13px; font-weight:800; line-height:1.15; color:#5c546b; }
   .pr-escalera li small{ display:block; font-size:11px; font-weight:600; opacity:.8; }
   .pr-escalera li.hecho{ background:rgba(23,18,31,.18); color:#17121F; }
   .pr-escalera li.ahora{ background:#17121F; color:var(--paper); transform:scale(1.08); box-shadow:0 6px 14px rgba(0,0,0,.25); }
@@ -417,6 +431,11 @@
       <div class="stat"><b id="kSeguidas">0</b><span class="mono">Seguidas</span></div>
     </div>
   </header>
+
+  <nav class="modos" aria-label="Modos de juego">
+    <div class="modos-head"><span class="modos-tit">Modo</span><span class="modos-nota">El ranking cuenta solo en <b>Todos</b></span></div>
+    <div class="modos-fila" id="modos" role="tablist"></div>
+  </nav>
 
   <main class="game" id="jugar" aria-live="polite">
     <div class="state" id="cargando"><div class="cargador"><i></i><i></i><i></i><i></i><i></i></div>Cargando canciones…</div>
@@ -725,10 +744,43 @@
   document.querySelectorAll('.lives i').forEach(function (i) { i.innerHTML = CORAZON; });
 
   // ---- Canciones al azar, sin repetir hasta que salgan todas ----
+  // ---- Modos: por artista y por temática (listas fijas de la misma playlist) ----
+  var MODOS = [
+    { id: 'todos', n: 'Todos', d: 'clásicos EDM' },
+    { id: 'avicii', n: 'Avicii', ids: [1440872929, 1440834312, 1445311545, 1440787352, 1440829549, 1445140803] },
+    { id: 'garrix', n: 'Martin Garrix', ids: [1670593167, 1196786344, 1137641426, 1416740913, 1350850469, 1346088035, 1460655320, 1613929502, 1350836690] },
+    { id: 'calvin', n: 'Calvin Harris', ids: [563923509, 922876189, 1364709436, 922876184, 1001677305, 563923516, 922876187, 1811333176, 1153704956, 922876183, 1458339447] },
+    { id: 'guetta', n: 'David Guetta', ids: [1715687117, 726149086, 726390516, 1640751223, 1715686788, 1688187513, 726390581, 1432646030, 924035435] },
+    { id: 'skrillex', n: 'Skrillex', ids: [971262282, 491596647, 491596732, 442170037, 833843699, 491596731, 434543346, 609821696] },
+    { id: 'suecia', n: 'Mafia sueca', d: 'SHM, Avicii, Alesso', tema: true, ids: [6798736832, 6799141274, 6798741949, 6798409159, 1440859014, 1440859246, 1445184674, 922876183, 1440872929, 1440834312, 1445311545, 1440787352, 1440829549, 1445140803] },
+    { id: 'festival', n: 'Himnos de festival', tema: true, ids: [1670593167, 1350850469, 1440787352, 6798736832, 6799141274, 6798741949, 491596647, 609821696, 1350836690, 736064507, 1445184674, 1346088035, 697195462] },
+    { id: 'cantar', n: 'Para cantar', d: 'a todo pulmón', tema: true, ids: [726390516, 1440872929, 922876189, 1196294581, 1207120448, 1207120538, 1196786344, 1137641426, 1001677305, 1364709436, 829910927, 1053934844, 1440833726, 1766005715, 1440834312, 563923509] },
+    { id: 'fiesta', n: 'Fiesta 2010', d: 'party rock y más', tema: true, ids: [1440756789, 1440757093, 1715687117, 726390581, 721686248, 1440733545, 1715686788, 1688187513, 726149086, 1445876398, 1444865027] }
+  ];
+  var modo = store.get('modo'); if (!MODOS.some(function (m) { return m.id === modo; })) modo = 'todos';
+  var generacion = 0;
+  function modoActual() { return MODOS.filter(function (m) { return m.id === modo; })[0]; }
+  function idsModo() { return modoActual().ids || CANCIONES; }
+  function pintarModos() {
+    $('modos').innerHTML = MODOS.map(function (m) {
+      var n = (m.ids || CANCIONES).length;
+      return '<button type="button" role="tab" class="modo' + (m.tema ? ' tema' : '') + '" data-modo="' + m.id + '" aria-selected="' + (m.id === modo) + '"><b>' + m.n + '</b><small>' + (m.d ? m.d + ' · ' : '') + n + ' canciones</small></button>';
+    }).join('');
+  }
+  $('modos').addEventListener('click', function (e) {
+    var b = e.target.closest('.modo'); if (!b || b.dataset.modo === modo) return;
+    modo = b.dataset.modo; store.set('modo', modo); pintarModos();
+    generacion++; bolsa = []; cola = []; cargandoMas = null; premioEnJuego = 0;
+    puntos = 0; jugadas = 0; aciertos = 0; seguidas = 0; pintarStats();
+    parar(); if (actual) delete audios[actual.trackId]; siguiente();
+    avisar('Modo ' + modoActual().n + (modo === 'todos' ? ': cuenta para el ranking' : ': partida nueva, no cuenta para el ranking'));
+  });
+  pintarModos();
+
   function sacarIds(n) {
-    var out = [];
+    var out = [], fuente = idsModo(); n = Math.min(n, fuente.length);
     while (out.length < n) {
-      if (!bolsa.length) { bolsa = CANCIONES.slice(); for (var i = bolsa.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = bolsa[i]; bolsa[i] = bolsa[j]; bolsa[j] = x; } }
+      if (!bolsa.length) { bolsa = fuente.slice(); for (var i = bolsa.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = bolsa[i]; bolsa[i] = bolsa[j]; bolsa[j] = x; } }
       out.push(bolsa.pop());
     }
     return out;
@@ -737,8 +789,9 @@
   function rellenar() {
     if (cola.length >= 3) return Promise.resolve();
     if (cargandoMas) return cargandoMas;
-    var ids = sacarIds(8);
+    var ids = sacarIds(8), gen = generacion;
     cargandoMas = itunes({ id: ids.join(',') }, 'lookup').then(function (res) {
+      if (gen !== generacion) return;   // se cambió de modo mientras cargaba
       var porId = {}; res.forEach(function (t) { if (t.previewUrl) porId[t.trackId] = t; });
       ids.forEach(function (id) { if (porId[id]) cola.push(porId[id]); });
       cargandoMas = null;
@@ -854,14 +907,14 @@
     })();
   });
 
-  // ---- Premios por racha: cada 10 seguidas sube el descuento; 40 = boleta gratis (todo es por boleta individual) ----
+  // ---- Premios por racha: desde 40 seguidas, cada 10 sube el descuento; 100 = boleta gratis (todo es por boleta individual) ----
   var WA_FT = '573161088178';
-  var ESCALERA = [[10, '5%'], [20, '7%'], [30, '10%'], [40, 'Gratis']], MAXP = 40;
+  var ESCALERA = [[40, '5%'], [50, '6%'], [60, '7%'], [70, '8%'], [80, '9%'], [90, '10%'], [100, 'Gratis']], MAXP = 100;
   var premioEnJuego = 0, premioCobrado = null;
   function textoPremio(n) { return n >= MAXP ? 'una boleta individual gratis para uno de nuestros eventos' : (ESCALERA.filter(function (e) { return e[0] === n; })[0] || [0, ''])[1] + ' de descuento en una boleta individual'; }
   function pintarEscalera(n) {
     $('prEscalera').innerHTML = ESCALERA.map(function (e) {
-      return '<li class="' + (e[0] < n ? 'hecho' : e[0] === n ? 'ahora' : '') + (e[0] === MAXP ? ' pase' : '') + '">' + e[1] + '<small>' + e[0] + ' seguidas</small></li>';
+      return '<li class="' + (e[0] < n ? 'hecho' : e[0] === n ? 'ahora' : '') + (e[0] === MAXP ? ' pase' : '') + '">' + e[1] + '<small>' + e[0] + '</small></li>';
     }).join('');
   }
   function mostrarPremio(n, final) {
@@ -1046,9 +1099,9 @@
       $('result').classList.add('show');
       animarBoleta(ok, p);
       ultimaRonda = { c: c, ok: ok, p: p, intento: enIntento, nivel: nivel, racha: ok ? seguidas : rachaAntes };
-      if (ok) { anotarRacha(seguidas); $('bIg').hidden = true; } else pedirIg(rachaAntes);
+      if (ok) { if (modo === 'todos') anotarRacha(seguidas); $('bIg').hidden = true; } else if (modo === 'todos') pedirIg(rachaAntes); else $('bIg').hidden = true;
       // premios: cada 10 seguidas aparece la opción de reclamar o seguir
-      if (ok && seguidas % 10 === 0 && seguidas <= MAXP) { premioEnJuego = seguidas; setTimeout(function () { mostrarPremio(seguidas); }, 1600); }
+      if (ok && modo === 'todos' && seguidas >= ESCALERA[0][0] && seguidas % 10 === 0 && seguidas <= MAXP) { premioEnJuego = seguidas; setTimeout(function () { mostrarPremio(seguidas); }, 1600); }
       else if (!ok && premioEnJuego) {
         if (rachaAntes >= MAXP) setTimeout(function () { mostrarPremio(MAXP, true); }, 1600);
         else { $('resExtra').textContent = '− Perdiste tu ' + textoPremio(premioEnJuego).split(' de ')[0] + ' de descuento'; $('resExtra').hidden = false; premioEnJuego = 0; }
@@ -1101,6 +1154,7 @@
     try { fetch(RANKING_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body: JSON.stringify(datos) }); } catch (e) {}
   }
   function enviarRonda(c, ok, enIntento, p) {
+    if (modo !== 'todos') return;   // los modos por artista o tema no cuentan para el ranking
     enviar({ accion: 'ronda', id: dispositivo, trackId: c.trackId, cancion: limpiarTitulo(c.trackName) + ' – ' + c.artistName, acierto: ok, intento: enIntento, dificultad: nivel || 'facil', puntos: p });
     clearTimeout(enviarRonda.t); enviarRonda.t = setTimeout(cargarRanking, 3000);
   }

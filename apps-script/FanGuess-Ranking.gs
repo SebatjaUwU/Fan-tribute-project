@@ -19,8 +19,8 @@
  *     Si ese @ ya está en el ranking del mes, se actualiza (queda la mejor racha).
  *   - Ranking: mejor racha del mes; si empatan, gana quien tenga más aciertos.
  *
- *   - Premios por racha (todo es por una boleta individual): 10 seguidas = 5% · 20 = 7% · 30 = 10%
- *     · 40 = boleta gratis. El servidor revisa la racha antes de dar el código y lo anota en la hoja Premios.
+ *   - Premios por racha (todo es por una boleta individual), solo en el modo Todos: 40 seguidas = 5% ·
+ *     50 = 6% · 60 = 7% · 70 = 8% · 80 = 9% · 90 = 10% · 100 = boleta gratis. El servidor revisa la racha antes de dar el código y lo anota en la hoja Premios.
  *
  * Hojas: Jugadores · Rondas · Ranking · Canciones (estadísticas) · Premios
  */
@@ -30,8 +30,8 @@ var PUNTOS = [300, 200, 100];
 var MULT = { facil: 1, medio: 1.5, dificil: 2 };
 var MIN_SEG_ENTRE_RONDAS = 2.5;    // nadie escucha, adivina y pasa de canción en menos de 2,5 s
 var MAX_RONDAS_DIA = 400;          // tope por celular por día
-var PREMIOS = { 10: '5% de descuento en una boleta individual', 20: '7% de descuento en una boleta individual', 30: '10% de descuento en una boleta individual', 40: 'Boleta individual gratis' };
-var NIVEL_GRATIS = 40;
+var PREMIOS = { 40: '5% de descuento en una boleta individual', 50: '6% de descuento en una boleta individual', 60: '7% de descuento en una boleta individual', 70: '8% de descuento en una boleta individual', 80: '9% de descuento en una boleta individual', 90: '10% de descuento en una boleta individual', 100: 'Boleta individual gratis' };
+var NIVEL_GRATIS = 100;
 
 function prepararHoja() {
   var ss = SpreadsheetApp.getActive();
