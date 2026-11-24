@@ -318,7 +318,7 @@ function procesarTransaccion_(tx) {
   if (r.status === 'procesada') {
     avisar_('Venta Wompi Medellín: ' + info.cantidad + ' x ' + t.tipo,
       r.nombre + ' (' + email + ') compró ' + info.cantidad + ' x ' + t.tipo + ' por $' + formato_(r.montoTotal) +
-      '.\nBoletas: ' + r.ticketIds.join(', ') + '\nCorreo con QR enviado: ' + (r.enviado ? 'sí' : 'NO, revisar'));
+      '.\nBoletas: ' + r.ticketIds.join(', ') + '\nCorreo con QR enviado: ' + (r.enviado ? 'sí' : 'NO todavía (' + r.motivo + '). El sistema lo reintenta solo cada 5 minutos; si no sale, usa el menú Boletería > Reenviar correos que fallaron.'));
   }
   return { status: r.status, cantidad: info.cantidad, tipo: t.tipo };
 }
@@ -402,7 +402,7 @@ function revisarCorreosWompi() {
         if (r.status === 'procesada') {
           avisar_('Venta Wompi Medellín: ' + info.cantidad + ' x ' + TIPOS[info.key].tipo,
             r.nombre + ' (' + p.email + ') compró ' + info.cantidad + ' x ' + TIPOS[info.key].tipo + ' por $' + formato_(r.montoTotal) +
-            '.\nBoletas: ' + r.ticketIds.join(', ') + '\nCorreo con QR enviado: ' + (r.enviado ? 'sí' : 'NO, revisar'));
+            '.\nBoletas: ' + r.ticketIds.join(', ') + '\nCorreo con QR enviado: ' + (r.enviado ? 'sí' : 'NO todavía (' + r.motivo + '). El sistema lo reintenta solo cada 5 minutos; si no sale, usa el menú Boletería > Reenviar correos que fallaron.'));
         }
       } catch (err) {
         problema = true;
@@ -410,6 +410,33 @@ function revisarCorreosWompi() {
       }
     });
     hilo.addLabel(!esMedellin ? otro : (problema ? revisar : ok));
+  });
+  try { reintentarCorreosWompi_(); } catch (err) { Logger.log('Reintento de correos: ' + err); }
+}
+
+/** Reenvía solo los QR de compras por Wompi (estado APPROVED) de las últimas 48 h cuyo correo no salió. */
+function reintentarCorreosWompi_() {
+  const sh = hoja_();
+  const data = sh.getDataRange().getValues();
+  const desde = Date.now() - 48 * 3600000, grupos = {};
+  for (let i = 1; i < data.length; i++) {
+    const f = data[i];
+    if (f[12] === true || !f[4] || !f[8] || String(f[11]) !== 'APPROVED') continue;
+    if (!(f[0] instanceof Date) || f[0].getTime() < desde) continue;
+    const g = f[5] + '|' + f[8];
+    (grupos[g] = grupos[g] || { filas: [], email: f[8], nombre: f[7], key: keyDeTipo_(f[2]), ids: [] });
+    grupos[g].filas.push(i + 1); grupos[g].ids.push(f[4]);
+  }
+  Object.keys(grupos).forEach(function (g) {
+    const x = grupos[g];
+    if (!x.key) return;
+    try {
+      enviarQR_({ email: x.email, nombre: x.nombre, key: x.key, ticketIds: x.ids });
+      x.filas.forEach(function (r) { sh.getRange(r, 13).setValue(true); });
+      avisar_('QR reenviado Medellín: ' + x.ids.join(', '), 'Se reenvió el correo con QR a ' + x.nombre + ' (' + x.email + ').');
+    } catch (err) {
+      Logger.log('Sigue sin salir el correo de ' + x.email + ': ' + err);
+    }
   });
 }
 
@@ -563,17 +590,18 @@ function registrarBoletas_(v) {
     lock.releaseLock();
   }
 
-  let enviado = false;
+  let enviado = false, motivo = '';
   if (!v.noEnviar) {
     try {
       enviarQR_({ email: v.email, nombre: v.nombre, key: v.key, ticketIds: ids });
       sh.getRange(inicio, 13, ids.length, 1).setValues(ids.map(function () { return [true]; }));
       enviado = true;
     } catch (err) {
-      Logger.log('Boletas ' + ids.join(', ') + ' guardadas, pero el correo falló: ' + err + '. Corre reenviarCorreosPendientes().');
+      motivo = String(err && err.message || err);
+      Logger.log('Boletas ' + ids.join(', ') + ' guardadas, pero el correo falló: ' + motivo + '. Se reintenta solo cada 5 minutos.');
     }
   }
-  return { status: 'procesada', ticketIds: ids, enviado: enviado, nombre: v.nombre, montoTotal: v.montoTotal };
+  return { status: 'procesada', ticketIds: ids, enviado: enviado, motivo: motivo, nombre: v.nombre, montoTotal: v.montoTotal };
 }
 
 // ---------------------------------------------------------------- ventas escritas en la hoja (como Halloween)
@@ -717,7 +745,28 @@ function imgCorreo_(nombre) {
   return IMG_CACHE_[nombre];
 }
 
+/** Imagen del QR: si un servicio falla, prueba el siguiente (con un reintento). */
+function qrPng_(id) {
+  const urls = [
+    'https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=10&data=' + encodeURIComponent(id),
+    'https://quickchart.io/qr?size=480&margin=2&text=' + encodeURIComponent(id)
+  ];
+  let ultimo = '';
+  for (let vuelta = 0; vuelta < 2; vuelta++) {
+    for (let i = 0; i < urls.length; i++) {
+      try {
+        const r = UrlFetchApp.fetch(urls[i], { muteHttpExceptions: true });
+        if (r.getResponseCode() === 200 && String(r.getHeaders()['Content-Type'] || '').indexOf('image') === 0) return r.getBlob().setName(id + '.png');
+        ultimo = 'QR ' + r.getResponseCode();
+      } catch (err) { ultimo = String(err); }
+    }
+    Utilities.sleep(1500);
+  }
+  throw new Error('No se pudo generar el QR (' + ultimo + ')');
+}
+
 function enviarQR_(d) {
+  if (MailApp.getRemainingDailyQuota() < 1) throw new Error('se acabó el cupo diario de correos de Gmail; se envía mañana');
   const t = TIPOS[d.key];
   const color = COLOR_TIPO[d.key] || '#8B3DFF';
   const F = "font-family:Roboto,'Helvetica Neue',Arial,sans-serif;";
@@ -732,8 +781,7 @@ function enviarQR_(d) {
   if (xero) inline.xero = xero;
 
   const bloques = d.ticketIds.map(function (id, i) {
-    const qr = UrlFetchApp.fetch('https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=10&data=' + encodeURIComponent(id))
-      .getBlob().setName(id + '.png');
+    const qr = qrPng_(id);
     inline['qr' + i] = qr;
     try {
       adjuntos.push(boletaPng_({ key: d.key, id: id, nombre: d.nombre, entrada: (i + 1) + ' de ' + d.ticketIds.length, qr: qr.copyBlob() }));
